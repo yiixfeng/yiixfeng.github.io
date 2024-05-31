@@ -35,7 +35,7 @@ btn {
 	margin: 50rpx auto;
 	background-color: #fefefe;
 	border-radius: 10px;
-	box-shadow: 0 0 5rpx 5rpx darkgray;
+	box-shadow: 0 0 5px 5px darkgray;
 }
 .aclose{
 	width: 500rpx;
@@ -50,7 +50,7 @@ btn {
 .contain{
 	width: 500rpx;
 	height: 400rpx;
-	font-size: 20rpx;
+	font-size: 20px;
 	margin-top: 0px;
 	text-align: center;
 }
@@ -58,7 +58,7 @@ btn {
 .close {
 	color: #aaa;
 	float: right;
-	margin-right: 15rpx;
+	margin-left: 15rpx;
 	font-size: 40rpx;
 	font-weight: bold;
 	text-decoration: none;
