@@ -26,27 +26,27 @@ btn {
 }
 
 .content {
-	width: 500px;
-	height: 300px;
-	margin: 50px auto;
+	width: 500rpx;
+	height: 300rpx;
+	margin: 50rpx auto;
 	background-color: #fefefe;
 	border-radius: 10px;
 	box-shadow: 0 0 5px 5px darkgray;
 }
 .aclose{
-	width: 500px;
-	height: 60px;
+	width: 500rpx;
+	height: 60rpx;
 	text-align: center;
 }
 .aclose span{
-	line-height: 70px;
-	font-size: 26px;
+	line-height: 70rpx;
+	font-size: 26rpx;
 	font-weight: 700;
 }
 .contain{
-	width: 500px;
-	height: 400px;
-	font-size: 20px;
+	width: 500rpx;
+	height: 400rpx;
+	font-size: 20rpx;
 	margin-top: 0px;
 	text-align: center;
 }
@@ -54,8 +54,8 @@ btn {
 .close {
 	color: #aaa;
 	float: right;
-	margin-right: 15px;
-	font-size: 40px;
+	margin-right: 15rpx;
+	font-size: 40rpx;
 	font-weight: bold;
 	text-decoration: none;
 }
