@@ -31,7 +31,7 @@ btn {
 	margin: 50rpx auto;
 	background-color: #fefefe;
 	border-radius: 10px;
-	box-shadow: 0 0 5px 5px darkgray;
+	box-shadow: 0 0 5rpx 5rpx darkgray;
 }
 .aclose{
 	width: 500rpx;
