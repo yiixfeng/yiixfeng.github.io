@@ -10,6 +10,10 @@ btn {
         justify-content: center;
         align-items: center;
 }
+.aa{
+	weight: 500rpx;
+
+}
 .btn:hover {
 	box-shadow: 0 0 5px 5px darkgray;
 }
