@@ -1,5 +1,9 @@
 <!-- Footer -->
+
 <footer>
+    <meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="../css/dialog.css">
+	<script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -9,19 +13,36 @@
                 <p class="copyright text-muted">
                     Copyright &copy; {{ site.title }} {{ site.time | date: '%Y' }}
                     <br>
-                    Powered by <a href="http://yiixfeng.me">Yxf Blog</a> |                          
-                </p>
-                <button id="showPopup" onclick="showPopup()" style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0">弹出</button>
-                               <div id="overlay">
-                                    <div class="popup">
-                                           <p class="popup_title">提示</p>
-                                                <p class="popup_content">学会制作弹出框了吗？</p>
-                                                <div class="popup_btn">
-                                                   <button class="cancelBtn" onclick="hidePopup()">取消</button>
-                                                   <button class="confirmBtn" onclick="hidePopup()">确认</button>
-                                                </div>
-                                      </div>
+                    Powered by <a href="http://yiixfeng.me">Yxf Blog</a> |
+                <a style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0">
+                        <button class="btn" onclick="show()">联系方式</button>
+                        <!-- 弹窗遮罩层 -->
+                        <div class="dialog">
+                          <!-- 弹窗内容 -->
+                          <div class="content">
+                            <div class="aclose">
+                                <span>微信</span>
+                                <a class="close" href="javascript:close();">&times;</a>
                             </div>
+                            <div class="contain">
+                                <img src="../img/weixin.jpg" width="500px">
+                            </div>
+                          </div>
+                        
+                        </div>
+                        
+                    </a>
+                    <script type="text/javascript">
+                        function show(){
+                            var show = $(".dialog").css("display");
+                            $(".dialog").css("display",show =="none"?"block":"none");
+                        }
+                        function close(){
+                            var show = $(".dialog").css("display");
+                            $(".dialog").css("display",show =="none"?"block":"none");
+                        }
+                    </script>
+                </p>
             </div>
         </div>
     </div>
