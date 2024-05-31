@@ -10,6 +10,10 @@ btn {
         justify-content: center;
         align-items: center;
 }
+.aa{
+	width:500px; 
+	border-radius:10px; 
+}
 .btn:hover {
 	box-shadow: 0 0 5px 5px darkgray;
 }
@@ -43,7 +47,7 @@ btn {
 	font-weight: 700;
 }
 .contain{
-	width: 300px;
+	width: 500px;
 	font-size: 20px;
 	margin-top: 10px;
 	text-align: center;
