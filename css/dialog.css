@@ -58,7 +58,7 @@ btn {
 .close {
 	color: #aaa;
 	float: right;
-	margin-left: 15rpx;
+	margin-right: 15rpx;
 	font-size: 40rpx;
 	font-weight: bold;
 	text-decoration: none;
