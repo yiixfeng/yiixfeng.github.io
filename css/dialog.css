@@ -11,7 +11,7 @@ btn {
         align-items: center;
 }
 .aa{
-	weight: 300rpx;
+	weight: 500px;
 
 }
 .btn:hover {
@@ -30,35 +30,35 @@ btn {
 }
 
 .content {
-	width: 300rpx;
-	height: 150rpx;
-	margin: 50rpx auto;
+	width: 500px;
+	margin: 50px auto;
 	background-color: #fefefe;
 	border-radius: 10px;
 	box-shadow: 0 0 5px 5px darkgray;
 }
 .aclose{
-	width: 500rpx;
-	height: 60rpx;
+	width: 500px;
+	height: 60px;
 	text-align: center;
 }
 .aclose span{
-	line-height: 70rpx;
-	font-size: 26rpx;
+	line-height: 70px;
+	font-size: 26px;
 	font-weight: 700;
 }
 .contain{
-	width: 300rpx;
+	width: 300px;
 	font-size: 20px;
 	margin-top: 0px;
 	text-align: center;
+	border-radius: 10px;
 }
 
 .close {
 	color: #aaa;
 	float: right;
-	margin-right: 40rpx;
-	font-size: 40rpx;
+	margin-right: 40px;
+	font-size: 40px;
 	font-weight: bold;
 	text-decoration: none;
 }
