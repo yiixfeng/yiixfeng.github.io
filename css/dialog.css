@@ -6,9 +6,7 @@
 	background-color: #006DCC;
 	border: 0px;
 	border-radius: 10px
-	display: flex;
-	text-align: center;
-	justify-content: center;
+	
 }
 .btn:hover {
 	box-shadow: 0 0 5px 5px darkgray;
