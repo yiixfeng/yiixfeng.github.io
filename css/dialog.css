@@ -46,9 +46,6 @@ btn {
 	text-align: center;	
 }
 .aclose span{
-	position: fixed;
-        top: 50%;
-        left: 50%;
 	line-height: 70px;
 	font-size: 26px;
 	font-weight: 700;
