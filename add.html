@@ -1,9 +1,16 @@
 ---
-title: Add
+title: Archive
 layout: default
 description: "「添加一篇属于我的文章」"
-header-img: "img/bg-walle.jpg"
+header-img: "img/bg-little-universe.jpg"
 ---
+
+<!--
+Credits: this page shamelessly borrowed a lot from:
+https://github.com/kitian616/jekyll-TeXt-theme
+-->
 <!-- Page Header -->
-{% include intro-header.html type='page' short=true %}
-<text>add</text>
+{% include multilingual-sel.html %}
+<link rel="stylesheet" href="css/add.css">
+<label for="message">Message:</label><br>
+<textarea id="message" name="message" rows="100" cols="50" placeholder="Enter your message here..."></textarea>
