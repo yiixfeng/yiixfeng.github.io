@@ -2,7 +2,7 @@
 title: Add
 layout: default
 description: "「添加一篇属于我的文章」"
-header-img: "img/bg-little-universe.jpg"
+header-img: "img/add.jpg"
 ---
 
 <!--
@@ -12,5 +12,11 @@ https://github.com/kitian616/jekyll-TeXt-theme
 <!-- Page Header -->
 {% include intro-header.html type='page' short=true %}
 <link rel="stylesheet" href="css/add.css">
-<label for="message">Message:</label><br>
-<textarea id="message" name="message" rows="100" cols="50" placeholder="Enter your message here..."></textarea>
+<div class="content">
+    <div class="title">
+        <textarea id="message" name="message" rows="1" cols="45" placeholder="输入文章标题..."></textarea>
+    </div>
+    <div class="message">
+        <textarea id="message" name="message" rows="100" cols="45" placeholder="输入正文部分..."></textarea>
+    </div>
+</div>
