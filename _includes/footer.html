@@ -17,7 +17,7 @@
                 <a style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0">
                     <button class="btn" onclick="show()">联系方式</button>
                     <!-- 弹窗遮罩层 -->
-                    <div class="dialog" id="aaa">
+                    <div class="dialog">
                       <!-- 弹窗内容 -->
                       <div class="content">
                         <div class="aclose" >
@@ -39,14 +39,6 @@
                             var show = $(".dialog").css("display");
                             $(".dialog").css("display",show =="none"?"block":"none");
                         }
-                        // 获取要绑定 touchend 事件的元素
-                        var touchableElement = document.getElementById('aaa');
-                        // 添加 touchend 事件处理程序
-                        touchableElement.addEventListener('touchend', function(event) {
-                        // 在触摸结束时执行的操作
-                        var show = $(".dialog").css("display");
-                        $(".dialog").css("display",show =="none"?"block":"none");
-                        })
                     </script>
                 </p>
             </div>
