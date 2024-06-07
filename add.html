@@ -37,33 +37,32 @@ https://github.com/kitian616/jekyll-TeXt-theme
         var text3 = document.getElementById("message2");
         // 获取 textarea 中的内容
         var message1 = text1.value,message2 = text2.value,message3 = text3.value;
-        // 打印内容到控制台
-        console.log("Textarea 内容：", message1,message2,message3);
-        // 或者执行其他操作，比如将内容发送到服务器等
-       const fs = require('fs');
+        const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const app = express();
+const bodyParser = require('body-parser');
 
-function generateAndSaveFile() {
-  const markdownContent = `
-    # Hello, World!
+app.use(bodyParser.text({ type: 'text/markdown' }));
 
-    This is a sample Markdown content generated using JavaScript.
+app.post('/save-markdown', function (req, res) {
+  // 获取POST请求中的Markdown内容
+  const markdownContent = req.body;
 
-    - Item 1
-    - Item 2
-    - Item 3
-  `;
+  // 定义要保存文件的路径为服务器根目录下的markdownFiles目录
+  const filePath = path.join(__dirname, '..', '_posts', 'markdownFile.md');
 
-  const outputFilePath = './_posts/1111.md';
-
-  fs.writeFile(outputFilePath, markdownContent, (err) => {
-    if (err) {
-      console.error('Failed to generate Markdown file:', err);
-    } else {
-      console.log('Markdown file generated successfully.');
-    }
+  // 将Markdown内容写入文件
+  fs.writeFile(filePath, markdownContent, function (err) {
+    if (err) throw err;
+    console.log('Markdown file saved!');
+    res.send('Markdown file saved!');
   });
-}
+});
 
-generateAndSaveFile();
+app.listen(3000, function () {
+  console.log('Server is running on port 3000');
+});
     }
     </script>
+    
