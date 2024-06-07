@@ -11,7 +11,7 @@ https://github.com/kitian616/jekyll-TeXt-theme
 -->
 <!-- Page Header -->
 {% include intro-header.html type='page' short=true %}
-<link rel="stylesheet" href="css/add.css">
+<link rel="stylesheet" href="\css\add.css">
 
 <div class="a1">
     <div class="a2">
@@ -39,12 +39,55 @@ https://github.com/kitian616/jekyll-TeXt-theme
 <script>
     function getMessage() {
         // 获取 textarea 元素
+        // 创建一个新的 Date 对象，它将自动设置为当前的日期和时间
+const currentDate = new Date();
+
+// 从 Date 对象中获取年、月、日、小时、分钟和秒
+const year = currentDate.getFullYear();
+const month = ('0' + (currentDate.getMonth() + 1)).slice(-2); // 月份是从 0 开始的，所以需要加 1
+const day = ('0' + currentDate.getDate()).slice(-2);
+const hours = ('0' + currentDate.getHours()).slice(-2);
+const minutes = ('0' + currentDate.getMinutes()).slice(-2);
+const seconds = ('0' + currentDate.getSeconds()).slice(-2);
+
+// 格式化日期和时间
+const formattedDateTime = `${year}-${month}-${day}`;
+
         var text1 = document.getElementById("title1");
         var text2 = document.getElementById("title2");        
         var text3 = document.getElementById("message2");
+
         // 获取 textarea 中的内容
-        var message1 = text1.value,message2 = text2.value,message3 = text3.value;
-        
-    }
+        const message1 = text1.value,message2 = text2.value,message3 = text3.value;
+            // 构建Markdown内容
+            const fileContent = `---
+layout:       post
+title:        "${message1}"
+subtitle:   "${message2}"
+author:       "Yxf"
+header-style: text
+catalog:      true
+tags:
+    
+---
+\n\n${message3}`;
+
+
+            // 创建一个 Blob 对象，用于存储文件内容
+            const blob = new Blob([fileContent], { type: 'text/markdown' });
+
+            // 创建一个 <a> 元素
+            const a = document.createElement('a');
+            a.href = window.URL.createObjectURL(blob);
+            const filename = `${formattedDateTime}-js.md`;
+            a.download =filename ; // 文件名
+
+            // 将 <a> 元素添加到页面上，并模拟点击它，触发文件下载
+            document.body.appendChild(a);
+            a.click();
+
+            // 下载完成后移除 <a> 元素
+            document.body.removeChild(a);
+        }
     </script>
     
