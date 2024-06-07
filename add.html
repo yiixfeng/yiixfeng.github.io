@@ -40,25 +40,27 @@ https://github.com/kitian616/jekyll-TeXt-theme
         // 打印内容到控制台
         console.log("Textarea 内容：", message1,message2,message3);
         // 或者执行其他操作，比如将内容发送到服务器等
-        const fs = require('fs');
-        // 生成 Markdown 内容
-        const markdownContent = `
-        # Hello, World!
+        function generateAndDownloadFile() {
+  var markdownContent = `
+    # Hello, World!
 
-        This is a sample Markdown content generated using JavaScript.
+    This is a sample Markdown content generated using JavaScript.
 
-        - Item 1
-        - Item 2
-        - Item 3
-        `;
+    - Item 1
+    - Item 2
+    - Item 3
+  `;
 
-    // 指定要保存 Markdown 文件的路径
-    const outputFilePath = '\_posts\1111.md';
+  var blob = new Blob([markdownContent], { type: 'text/markdown' });
 
-    // 将 Markdown 内容写入文件
-    fs.writeFile(outputFilePath, markdownContent, (err) => {
-        if (err) throw err;
-        console.log('Markdown file generated successfully.');
-        });
-     }
+  var url = URL.createObjectURL(blob);
+
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'sample.md';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
     </script>
