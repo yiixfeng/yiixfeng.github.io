@@ -43,3 +43,7 @@
     width: 100px;
     height: 60px;
 }
+#uploadForm{
+    display: grid;
+    place-items: center; /* 水平和垂直居中 */
+}
