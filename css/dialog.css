@@ -59,12 +59,25 @@ btn {
 	border-radius: 10px;
 }
 
-.close {
-	position:fixed;
-	color: black;
-	float: right;
-	right: 5%;
-	font-size: 60px;
-	font-weight: bold;
-	text-decoration: none;
-}
+@media (max-width: 768px) {
+	.close {
+		position:fixed;
+		color: black;
+		float: right;
+		right: 30%;
+		font-size: 60px;
+		font-weight: bold;
+		text-decoration: none;
+	}
+  }
+  @media (min-width: 768px) {
+	.close {
+		position:fixed;
+		color: black;
+		float: right;
+		right: 5%;
+		font-size: 60px;
+		font-weight: bold;
+		text-decoration: none;
+	}
+  }
