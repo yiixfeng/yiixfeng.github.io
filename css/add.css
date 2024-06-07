@@ -32,7 +32,7 @@
     height: 100%;
 }
 .aa3{
-    display: grid;
+    display: flex;
     justify-content: center; /* 水平居中 */
     align-items: center; /* 垂直居中 */
     width: 750px;
@@ -43,7 +43,11 @@
     width: 100px;
     height: 60px;
 }
-#uploadForm{
+.aaa3{
     display: grid;
     place-items: center; /* 水平和垂直居中 */
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    width: 375px;
+    height: 100px;
 }
