@@ -11,21 +11,54 @@ https://github.com/kitian616/jekyll-TeXt-theme
 -->
 <!-- Page Header -->
 {% include intro-header.html type='page' short=true %}
-<link rel="stylesheet" href="\css\add.css">
+<link rel="stylesheet" href="css/add.css">
 <div class="a1">
     <div class="a2">
         <div class="aa1">
             <textarea id="title1" name="title1" rows="1" cols="100" placeholder="输入文章标题..."></textarea>
         </div>
         <div class="aa1">
-            <textarea id="title1" name="title1" rows="1" cols="80" placeholder="输入文章副标题..."></textarea>
+            <textarea id="title2" name="title2" rows="1" cols="80" placeholder="输入文章副标题..."></textarea>
         </div>
         <div class="aa2">
             <textarea id="message2" name="message2" rows="60" cols="100" placeholder="输入正文部分..."></textarea>
         </div>
         <div class="aa3">
-            <button class="bo" onclick="show()">发布</button>
+            <button class="bo" onclick="getMessage()">发布</button>
         </div>
     </div>
 </div>
 
+<script>
+    function getMessage() {
+        // 获取 textarea 元素
+        var text1 = document.getElementById("title1");
+        var text2 = document.getElementById("title2");        
+        var text3 = document.getElementById("message2");
+        // 获取 textarea 中的内容
+        var message1 = text1.value,message2 = text2.value,message3 = text3.value;
+        // 打印内容到控制台
+        console.log("Textarea 内容：", message1,message2,message3);
+        // 或者执行其他操作，比如将内容发送到服务器等
+        const fs = require('fs');
+        // 生成 Markdown 内容
+        const markdownContent = `
+        # Hello, World!
+
+        This is a sample Markdown content generated using JavaScript.
+
+        - Item 1
+        - Item 2
+        - Item 3
+        `;
+
+    // 指定要保存 Markdown 文件的路径
+    const outputFilePath = '\_posts\1111.md';
+
+    // 将 Markdown 内容写入文件
+    fs.writeFile(outputFilePath, markdownContent, (err) => {
+        if (err) throw err;
+        console.log('Markdown file generated successfully.');
+        });
+     }
+    </script>
