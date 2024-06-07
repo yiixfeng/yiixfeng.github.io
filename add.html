@@ -24,6 +24,12 @@ https://github.com/kitian616/jekyll-TeXt-theme
             <textarea id="message2" name="message2" rows="60" cols="100" placeholder="输入正文部分..."></textarea>
         </div>
         <div class="aa3">
+            <form id="uploadForm" action="/_posts/" method="post" enctype="multipart/form-data">
+                <input type="file" id="fileInput" name="fileInput">
+                <button type="submit">上传</button>
+            </form>
+        </div>
+        <div class="aa3">
             <button class="bo" onclick="getMessage()">发布</button>
         </div>
     </div>
@@ -37,30 +43,6 @@ https://github.com/kitian616/jekyll-TeXt-theme
         var text3 = document.getElementById("message2");
         // 获取 textarea 中的内容
         var message1 = text1.value,message2 = text2.value,message3 = text3.value;
-       const markdownContent = "# This is a generated Markdown file";
-
-            // 发送 POST 请求
-            fetch('/generate-markdown', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ content: markdownContent })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Response:', data);
-                alert('Markdown file generated successfully!');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while generating the Markdown file.');
-            });
         }
     </script>
     
