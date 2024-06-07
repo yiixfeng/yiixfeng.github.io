@@ -11,7 +11,8 @@ https://github.com/kitian616/jekyll-TeXt-theme
 -->
 <!-- Page Header -->
 {% include intro-header.html type='page' short=true %}
-<link rel="stylesheet" href="\css\add.css">
+<link rel="stylesheet" href="css/add.css">
+
 <div class="a1">
     <div class="a2">
         <div class="aa1">
@@ -22,15 +23,15 @@ https://github.com/kitian616/jekyll-TeXt-theme
         </div>
         <div class="aa2">
             <textarea id="message2" name="message2" rows="60" cols="100" placeholder="输入正文部分..."></textarea>
+            
         </div>
         <div class="aa3">
-            <form id="uploadForm" action="/_posts/" method="post" enctype="multipart/form-data">
-                <input type="file" id="fileInput" name="fileInput">
-                <button type="submit">上传</button>
-            </form>
-        </div>
-        <div class="aa3">
-            <button class="bo" onclick="getMessage()">发布</button>
+            <div class="aaa3">
+                <button class="bo" onclick="getMessage()">生成</button>
+            </div>
+            <div class="aaa3">
+                <button class="bo" onclick="window.location.href='https://github.com/yiixfeng/yiixfeng.github.io/upload/master/_posts'">发布</button>
+            </div>
         </div>
     </div>
 </div>
@@ -43,6 +44,7 @@ https://github.com/kitian616/jekyll-TeXt-theme
         var text3 = document.getElementById("message2");
         // 获取 textarea 中的内容
         var message1 = text1.value,message2 = text2.value,message3 = text3.value;
-        }
+        
+    }
     </script>
     
