@@ -6,6 +6,7 @@
     width: 100%;
     height: 100%;
 }
+@media (min-width: 768px) {
 .aa1{
     display: grid;
     justify-content: center; /* 水平居中 */
@@ -50,4 +51,52 @@
     align-items: center; /* 垂直居中 */
     width: 375px;
     height: 100px;
+}
+}
+@media (max-width: 768px) {
+    .aa1{
+        display: grid;
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+        flex-direction: column; /* 垂直排列 */
+        width: 375px;
+        height: 50px;
+        background-color:aliceblue
+    }
+    .aa2{
+        display: grid;
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+        flex-direction: column; /* 垂直排列 */
+        width: 375px;
+        background-color:aliceblue
+    }
+    .a2{
+        display: grid;
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+        flex-direction: column; /* 垂直排列 */
+        width: 375px;
+        height: 100%;
+    }
+    .aa3{
+        display: flex;
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+        width: 375px;
+        height: 100px;
+        background-color:aliceblue
+    }
+    .bo{
+        width: 50px;
+        height: 30px;
+    }
+    .aaa3{
+        display: grid;
+        place-items: center; /* 水平和垂直居中 */
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+        width: 187.5px;
+        height: 100px;
+    }
 }
