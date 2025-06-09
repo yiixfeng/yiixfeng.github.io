@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>垃圾投放点定位系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .location-interface {
+            padding: 25px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #FF9800;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .map-container {
+            height: 400px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .location-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .location-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: #43A047;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #1976D2;
+        }
+        
+        .btn-disabled {
+            background: #cccccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        .location-results {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            min-height: 150px;
+        }
+        
+        .location-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .location-item:hover {
+            background: #FFF3E0;
+        }
+        
+        .location-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #FF9800;
+        }
+        
+        .location-details {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .location-type {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        
+        .recyclable { background: rgba(33, 150, 243, 0.1); color: #2196F3; }
+        .hazardous { background: rgba(244, 67, 54, 0.1); color: #F44336; }
+        .kitchen { background: rgba(76, 175, 80, 0.1); color: #4CAF50; }
+        .other { background: rgba(158, 158, 158, 0.1); color: #9E9E9E; }
+        
+        .back-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 30px;
+            background: #f5f5f5;
+            color: #333;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .back-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .info-window {
+            min-width: 250px;
+            padding: 15px;
+        }
+        
+        .info-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #FF9800;
+        }
+        
+        .info-detail {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .info-actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .info-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .info-btn.navigation {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .info-btn.details {
+            background: #2196F3;
+            color: white;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #757575;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: #FF9800;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty-message {
+            text-align: center;
+            color: #757575;
+            padding: 40px 0;
+        }
+        
+        .empty-message i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #FF9800;
+        }
+        
+        @media (max-width: 768px) {
+            .map-container {
+                height: 300px;
+            }
+            
+            .location-controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-map-marker-alt"></i> 垃圾投放点定位系统</h1>
+        </header>
+        
+        <div class="location-interface">
+            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> 垃圾投放点定位</h2>
+            
+            <div class="location-controls">
+                <input type="text" class="location-input" id="searchInput" placeholder="输入地址或区域名称">
+                <button class="btn btn-primary" id="searchBtn">
+                    <i class="fas fa-search"></i> 搜索投放点
+                </button>
+                <button class="btn btn-secondary" id="locateMeBtn">
+                    <i class="fas fa-location-arrow"></i> 我的位置
+                </button>
+            </div>
+            
+            <div class="map-container">
+                <div id="map">地图加载中...</div>
+            </div>
+            
+            <div class="location-results" id="locationResults">
+                <div class="empty-message">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <p>搜索或定位以查看附近的垃圾投放点</p>
+                </div>
+            </div>
+            
+            <button class="back-btn" onclick="location.href='index.html'">
+                <i class="fas fa-arrow-left"></i> 返回首页
+            </button>
+        </div>
+        
+        <footer>
+            <p>© 2025 智能垃圾分类系统 | 技术支持：AI识别与地图服务 | 为环保贡献力量</p>
+        </footer>
+    </div>
+
+    <!-- 百度地图API -->
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=5LgUlUqhondThajVao7DTZTfQmUV533l"></script>
+    
+    <script>
+        // 全局变量
+        let map = null;
+        let markers = [];
+        let currentLocation = null;
+        let geolocation = null;
+
+        // 初始化地图
+        function initMap() {
+            // 创建地图实例
+            map = new BMap.Map("map");
+            
+            // 初始中心点（北京）
+            const point = new BMap.Point(113.55, 23.3);
+            map.centerAndZoom(point, 13);
+            
+            // 添加地图控件
+            map.addControl(new BMap.NavigationControl());
+            map.addControl(new BMap.ScaleControl());
+            map.addControl(new BMap.OverviewMapControl());
+            map.enableScrollWheelZoom(true);
+            
+            // 创建定位对象
+            geolocation = new BMap.Geolocation();
+        }
+
+        // 模拟后端API调用
+        async function fetchLocations(params = {}) {
+            // 显示加载状态
+            showLoading();
+            
+            // 模拟API延迟
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // 这里模拟从后端获取的数据
+            const mockLocations = [
+                {
+                    id: 1,
+                    name: "广州商学院垃圾分类站",
+                    address: "黄埔区九龙大道206号",
+                    hours: "07:00-21:00",
+                    types: ["recyclable", "kitchen", "other"],
+                    position: { lng: 113.5385, lat: 23.3045 },
+                    capacity: "空闲",
+                    distance: "0.1km",
+                    phone: "020-82878488"
+                },
+                {
+                    id: 2,
+                    name: "万科幸福誉环保回收点",
+                    address: "黄埔区龙湖街道万科幸福誉",
+                    hours: "全天开放",
+                    types: ["recyclable", "hazardous", "kitchen"],
+                    position: { lng: 113.5402, lat: 23.3028 },
+                    capacity: "中等",
+                    distance: "0.8km",
+                    phone: "020-82879966"
+                },
+                {
+                    id: 3,
+                    name: "汤村垃圾分类中心",
+                    address: "黄埔区龙湖街道汤村",
+                    hours: "08:00-22:00",
+                    types: ["recyclable", "kitchen", "hazardous", "other"],
+                    position: { lng: 113.5373, lat: 23.3059 },
+                    capacity: "繁忙",
+                    distance: "0.6km",
+                    phone: "020-82876543"
+                },
+                {
+                    id: 4,
+                    name: "知识城垃圾分类站",
+                    address: "黄埔区知识城",
+                    hours: "06:30-22:30",
+                    types: ["recyclable", "other", "hazardous"],
+                    position: { lng: 113.5328, lat: 23.3017 },
+                    capacity: "空闲",
+                    distance: "1.2km",
+                    phone: "020-82871234"
+                },
+                {
+                    id: 5,
+                    name: "康大职业技术学院回收点",
+                    address: "黄埔区康大教育园区",
+                    hours: "08:00-20:00",
+                    types: ["recyclable", "kitchen"],
+                    position: { lng: 113.5421, lat: 23.3063 },
+                    capacity: "中等",
+                    distance: "0.9km",
+                    phone: "020-82875678"
+                }
+            ];
+            
+            // 模拟搜索过滤
+            let results = mockLocations;
+            if (params.keyword) {
+                const keyword = params.keyword.toLowerCase();
+                results = mockLocations.filter(location => 
+                    location.name.toLowerCase().includes(keyword) || 
+                    location.address.toLowerCase().includes(keyword)
+                );
+            }
+            
+            // 模拟定位过滤
+            if (params.longitude && params.latitude) {
+                // 在实际应用中，这里应该是根据坐标计算距离进行排序
+                results.sort((a, b) => {
+                    const distA = parseFloat(a.distance);
+                    const distB = parseFloat(b.distance);
+                    return distA - distB;
+                });
+            }
+            
+            // 返回模拟结果
+            return {
+                success: true,
+                message: "获取投放点成功",
+                data: results
+            };
+        }
+
+        // 添加投放点标记
+        function addLocationMarkers(locations) {
+            // 清除现有标记
+            markers.forEach(marker => map.removeOverlay(marker));
+            markers = [];
+            
+            // 创建新标记
+            locations.forEach(location => {
+                const point = new BMap.Point(location.position.lng, location.position.lat);
+                const marker = new BMap.Marker(point);
+                
+                // 添加点击事件
+                marker.addEventListener("click", () => {
+                    showLocationInfo(location, marker);
+                });
+                
+                map.addOverlay(marker);
+                markers.push(marker);
+            });
+            
+            // 如果只有一个结果，聚焦到该点
+            if (locations.length === 1) {
+                const point = new BMap.Point(
+                    locations[0].position.lng,
+                    locations[0].position.lat
+                );
+                map.centerAndZoom(point, 15);
+            } else if (locations.length > 1) {
+                // 多个结果时调整地图范围
+                const bounds = new BMap.Bounds();
+                locations.forEach(location => {
+                    bounds.extend(new BMap.Point(location.position.lng, location.position.lat));
+                });
+                map.setViewport(bounds);
+            }
+        }
+
+        // 显示位置信息窗口
+        function showLocationInfo(location, marker) {
+            const content = `
+                <div class="info-window">
+                    <div class="info-title">${location.name}</div>
+                    <div class="info-detail"><i class="fas fa-map-marker-alt"></i> ${location.address}</div>
+                    <div class="info-detail"><i class="fas fa-clock"></i> ${location.hours}</div>
+                    <div class="info-detail"><i class="fas fa-phone"></i> ${location.phone}</div>
+                    <div class="info-detail"><i class="fas fa-info-circle"></i> 容量: ${location.capacity}</div>
+                    <div class="info-detail"><i class="fas fa-walking"></i> 距离: ${location.distance}</div>
+                    <div class="info-actions">
+                        <button class="info-btn navigation" onclick="navigateToLocation(${location.position.lng}, ${location.position.lat})">
+                            <i class="fas fa-route"></i> 导航
+                        </button>
+                        <button class="info-btn details">
+                            <i class="fas fa-info"></i> 详情
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            const infoWindow = new BMap.InfoWindow(content);
+            map.openInfoWindow(infoWindow, marker.getPosition());
+        }
+
+        // 导航到指定位置
+        function navigateToLocation(lng, lat) {
+            if (!currentLocation) {
+                alert("请先定位您当前的位置");
+                return;
+            }
+            
+            // 起点和终点坐标
+            const startPoint = new BMap.Point(currentLocation.longitude, currentLocation.latitude);
+            const endPoint = new BMap.Point(lng, lat);
+            
+            // 创建步行导航
+            const walking = new BMap.WalkingRoute(map, {
+                renderOptions: {map: map, autoViewport: true}
+            });
+            
+            // 清除现有路线
+            map.clearOverlays();
+            
+            // 重新添加投放点标记
+            addLocationMarkers(locations);
+            
+            // 规划路线
+            walking.search(startPoint, endPoint);
+        }
+
+        // 定位用户当前位置
+        async function locateUser() {
+            // 禁用按钮防止重复点击
+            const locateBtn = document.getElementById('locateMeBtn');
+            locateBtn.classList.add('btn-disabled');
+            locateBtn.disabled = true;
+            
+            try {
+                // 获取用户位置
+                const position = await new Promise((resolve, reject) => {
+                    geolocation.getCurrentPosition(function(r) {
+                        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                            resolve(r);
+                        } else {
+                            reject(new Error('定位失败: ' + this.getStatus()));
+                        }
+                    }, {enableHighAccuracy: true});
+                });
+                
+                // 保存当前位置
+                currentLocation = {
+                    longitude: position.point.lng,
+                    latitude: position.point.lat
+                };
+                
+                // 创建定位点标记
+                const point = new BMap.Point(position.point.lng, position.point.lat);
+                const marker = new BMap.Marker(point, {
+                    icon: new BMap.Icon('https://api.map.baidu.com/images/car.png', new BMap.Size(40, 40))
+                });
+                
+                map.addOverlay(marker);
+                map.panTo(point);
+                
+                // 根据位置获取附近的投放点
+                const response = await fetchLocations({
+                    longitude: position.point.lng,
+                    latitude: position.point.lat
+                });
+                
+                if (response.success && response.data.length) {
+                    addLocationMarkers(response.data);
+                    renderLocationList(response.data);
+                } else {
+                    showEmptyMessage("附近未找到垃圾投放点");
+                }
+                
+            } catch (error) {
+                alert(error.message);
+            } finally {
+                // 重新启用按钮
+                locateBtn.classList.remove('btn-disabled');
+                locateBtn.disabled = false;
+            }
+        }
+
+        // 搜索投放点
+        async function searchLocations() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            
+            // 禁用搜索按钮防止重复点击
+            const searchBtn = document.getElementById('searchBtn');
+            searchBtn.classList.add('btn-disabled');
+            searchBtn.disabled = true;
+            
+            try {
+                const response = await fetchLocations({ keyword });
+                
+                if (response.success && response.data.length) {
+                    addLocationMarkers(response.data);
+                    renderLocationList(response.data);
+                } else {
+                    showEmptyMessage("未找到匹配的垃圾投放点");
+                }
+                
+            } catch (error) {
+                alert("搜索失败：" + error.message);
+            } finally {
+                // 重新启用按钮
+                searchBtn.classList.remove('btn-disabled');
+                searchBtn.disabled = false;
+            }
+        }
+
+        // 渲染投放点列表
+        function renderLocationList(locationsToRender) {
+            const container = document.getElementById('locationResults');
+            
+            if (!locationsToRender || locationsToRender.length === 0) {
+                container.innerHTML = '<div class="empty-message"><i class="fas fa-map-marker-alt"></i><p>附近未找到垃圾投放点</p></div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            locationsToRender.forEach(location => {
+                const item = document.createElement('div');
+                item.className = 'location-item';
+                item.onclick = () => {
+                    const point = new BMap.Point(location.position.lng, location.position.lat);
+                    map.panTo(point);
+                    map.setZoom(16);
+                    
+                    // 找到对应的标记并触发点击
+                    const marker = markers.find(m => 
+                        m.getPosition().lng === location.position.lng && 
+                        m.getPosition().lat === location.position.lat
+                    );
+                    
+                    if (marker) {
+                        showLocationInfo(location, marker);
+                    }
+                };
+                
+                item.innerHTML = `
+                    <div class="location-name">${location.name}</div>
+                    <div class="location-details">
+                        <span><i class="fas fa-road"></i> ${location.address}</span>
+                        <span><i class="fas fa-clock"></i> ${location.hours}</span>
+                    </div>
+                    <div>
+                        ${location.types.map(type => 
+                            `<span class="location-type ${type}">${getTypeName(type)}</span>`
+                        ).join('')}
+                    </div>
+                    <div class="location-details">
+                        <span><i class="fas fa-walking"></i> 距离: ${location.distance}</span>
+                        <span><i class="fas fa-info-circle"></i> 容量: ${location.capacity}</span>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        // 显示加载状态
+        function showLoading() {
+            const container = document.getElementById('locationResults');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+        }
+
+        // 显示空状态
+        function showEmptyMessage(message = "未找到垃圾投放点") {
+            const container = document.getElementById('locationResults');
+            container.innerHTML = `<div class="empty-message"><i class="fas fa-map-marker-alt"></i><p>${message}</p></div>`;
+        }
+
+        // 获取垃圾类型中文名称
+        function getTypeName(type) {
+            switch(type) {
+                case 'recyclable': return '可回收物';
+                case 'hazardous': return '有害垃圾';
+                case 'kitchen': return '厨余垃圾';
+                case 'other': return '其他垃圾';
+                default: return type;
+            }
+        }
+
+        // 页面加载完成后初始化地图
+        window.onload = function() {
+            initMap();
+            
+            // 绑定按钮事件
+            document.getElementById('searchBtn').addEventListener('click', searchLocations);
+            document.getElementById('locateMeBtn').addEventListener('click', locateUser);
+            
+            // 搜索框回车事件
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchLocations();
+                }
+            });
+        };
+    </script>
+</body>
+</html>
