@@ -134,6 +134,8 @@
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             min-height: 150px;
+            max-height: 400px;
+            overflow-y: auto;
         }
         
         .location-item {
@@ -322,7 +324,7 @@
         </div>
         
         <footer>
-            <p>© 2025 智能垃圾分类系统 | 技术支持：AI识别与地图服务 | 为环保贡献力量</p>
+            <p>© 2025 智能垃圾分类系统 | 技术支持：百度地图API | 为环保贡献力量</p>
         </footer>
     </div>
 
@@ -335,6 +337,7 @@
         let markers = [];
         let currentLocation = null;
         let geolocation = null;
+        const SEARCH_KEYWORD = "垃圾分类";
 
         // 初始化地图
         function initMap() {
@@ -355,99 +358,57 @@
             geolocation = new BMap.Geolocation();
         }
 
-        // 模拟后端API调用
-        async function fetchLocations(params = {}) {
-            // 显示加载状态
-            showLoading();
-            
-            // 模拟API延迟
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            // 这里模拟从后端获取的数据
-            const mockLocations = [
-                {
-                    id: 1,
-                    name: "广州商学院垃圾分类站",
-                    address: "黄埔区九龙大道206号",
-                    hours: "07:00-21:00",
-                    types: ["recyclable", "kitchen", "other"],
-                    position: { lng: 113.5385, lat: 23.3045 },
-                    capacity: "空闲",
-                    distance: "0.1km",
-                    phone: "020-82878488"
-                },
-                {
-                    id: 2,
-                    name: "万科幸福誉环保回收点",
-                    address: "黄埔区龙湖街道万科幸福誉",
-                    hours: "全天开放",
-                    types: ["recyclable", "hazardous", "kitchen"],
-                    position: { lng: 113.5402, lat: 23.3028 },
-                    capacity: "中等",
-                    distance: "0.8km",
-                    phone: "020-82879966"
-                },
-                {
-                    id: 3,
-                    name: "汤村垃圾分类中心",
-                    address: "黄埔区龙湖街道汤村",
-                    hours: "08:00-22:00",
-                    types: ["recyclable", "kitchen", "hazardous", "other"],
-                    position: { lng: 113.5373, lat: 23.3059 },
-                    capacity: "繁忙",
-                    distance: "0.6km",
-                    phone: "020-82876543"
-                },
-                {
-                    id: 4,
-                    name: "知识城垃圾分类站",
-                    address: "黄埔区知识城",
-                    hours: "06:30-22:30",
-                    types: ["recyclable", "other", "hazardous"],
-                    position: { lng: 113.5328, lat: 23.3017 },
-                    capacity: "空闲",
-                    distance: "1.2km",
-                    phone: "020-82871234"
-                },
-                {
-                    id: 5,
-                    name: "康大职业技术学院回收点",
-                    address: "黄埔区康大教育园区",
-                    hours: "08:00-20:00",
-                    types: ["recyclable", "kitchen"],
-                    position: { lng: 113.5421, lat: 23.3063 },
-                    capacity: "中等",
-                    distance: "0.9km",
-                    phone: "020-82875678"
-                }
-            ];
-            
-            // 模拟搜索过滤
-            let results = mockLocations;
-            if (params.keyword) {
-                const keyword = params.keyword.toLowerCase();
-                results = mockLocations.filter(location => 
-                    location.name.toLowerCase().includes(keyword) || 
-                    location.address.toLowerCase().includes(keyword)
-                );
-            }
-            
-            // 模拟定位过滤
-            if (params.longitude && params.latitude) {
-                // 在实际应用中，这里应该是根据坐标计算距离进行排序
-                results.sort((a, b) => {
-                    const distA = parseFloat(a.distance);
-                    const distB = parseFloat(b.distance);
-                    return distA - distB;
+        // 从百度地图API获取垃圾分类点
+        function searchBaiduMap(keyword, centerPoint) {
+            return new Promise((resolve, reject) => {
+                // 创建本地搜索对象
+                const local = new BMap.LocalSearch(map, {
+                    onSearchComplete: (results) => {
+                        if (local.getStatus() === BMAP_STATUS_SUCCESS) {
+                            const locations = [];
+                            for (let i = 0; i < results.getCurrentNumPois(); i++) {
+                                const poi = results.getPoi(i);
+                                locations.push({
+                                    id: poi.uid,
+                                    name: poi.title,
+                                    address: poi.address,
+                                    position: {
+                                        lng: poi.point.lng,
+                                        lat: poi.point.lat
+                                    },
+                                    distance: calculateDistance(centerPoint, poi.point)
+                                });
+                            }
+                            resolve(locations);
+                        } else {
+                            reject(new Error('搜索失败: ' + local.getStatus()));
+                        }
+                    }
                 });
-            }
+                
+                // 执行搜索
+                if (centerPoint) {
+                    local.searchNearby(keyword, centerPoint, 2000); // 搜索2公里范围内的点
+                } else {
+                    local.search(keyword);
+                }
+            });
+        }
+
+        // 计算两点间距离（简化版，实际应使用球面距离公式）
+        function calculateDistance(point1, point2) {
+            const R = 6371; // 地球半径（km）
+            const dLat = (point2.lat - point1.lat) * Math.PI / 180;
+            const dLon = (point2.lng - point1.lng) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(point1.lat * Math.PI / 180) * 
+                Math.cos(point2.lat * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const distance = R * c * 1000; // 转换为米
             
-            // 返回模拟结果
-            return {
-                success: true,
-                message: "获取投放点成功",
-                data: results
-            };
+            return distance > 1000 ? (distance / 1000).toFixed(1) + 'km' : Math.round(distance) + 'm';
         }
 
         // 添加投放点标记
@@ -459,7 +420,13 @@
             // 创建新标记
             locations.forEach(location => {
                 const point = new BMap.Point(location.position.lng, location.position.lat);
-                const marker = new BMap.Marker(point);
+                const marker = new BMap.Marker(point, {
+                    icon: new BMap.Icon('https://api.map.baidu.com/img/markers.png', 
+                        new BMap.Size(23, 25), {
+                        offset: new BMap.Size(10, 25),
+                        imageOffset: new BMap.Size(0, 0 - 10 * 25)
+                    })
+                });
                 
                 // 添加点击事件
                 marker.addEventListener("click", () => {
@@ -493,16 +460,10 @@
                 <div class="info-window">
                     <div class="info-title">${location.name}</div>
                     <div class="info-detail"><i class="fas fa-map-marker-alt"></i> ${location.address}</div>
-                    <div class="info-detail"><i class="fas fa-clock"></i> ${location.hours}</div>
-                    <div class="info-detail"><i class="fas fa-phone"></i> ${location.phone}</div>
-                    <div class="info-detail"><i class="fas fa-info-circle"></i> 容量: ${location.capacity}</div>
-                    <div class="info-detail"><i class="fas fa-walking"></i> 距离: ${location.distance}</div>
+                    <div class="info-detail"><i class="fas fa-ruler"></i> 距离: ${location.distance}</div>
                     <div class="info-actions">
                         <button class="info-btn navigation" onclick="navigateToLocation(${location.position.lng}, ${location.position.lat})">
                             <i class="fas fa-route"></i> 导航
-                        </button>
-                        <button class="info-btn details">
-                            <i class="fas fa-info"></i> 详情
                         </button>
                     </div>
                 </div>
@@ -573,14 +534,12 @@
                 map.panTo(point);
                 
                 // 根据位置获取附近的投放点
-                const response = await fetchLocations({
-                    longitude: position.point.lng,
-                    latitude: position.point.lat
-                });
+                showLoading();
+                const locations = await searchBaiduMap(SEARCH_KEYWORD, point);
                 
-                if (response.success && response.data.length) {
-                    addLocationMarkers(response.data);
-                    renderLocationList(response.data);
+                if (locations.length) {
+                    addLocationMarkers(locations);
+                    renderLocationList(locations);
                 } else {
                     showEmptyMessage("附近未找到垃圾投放点");
                 }
@@ -598,17 +557,24 @@
         async function searchLocations() {
             const keyword = document.getElementById('searchInput').value.trim();
             
+            if (!keyword) {
+                alert("请输入搜索关键词");
+                return;
+            }
+            
             // 禁用搜索按钮防止重复点击
             const searchBtn = document.getElementById('searchBtn');
             searchBtn.classList.add('btn-disabled');
             searchBtn.disabled = true;
             
             try {
-                const response = await fetchLocations({ keyword });
+                showLoading();
+                const centerPoint = map.getCenter();
+                const locations = await searchBaiduMap(SEARCH_KEYWORD, centerPoint);
                 
-                if (response.success && response.data.length) {
-                    addLocationMarkers(response.data);
-                    renderLocationList(response.data);
+                if (locations.length) {
+                    addLocationMarkers(locations);
+                    renderLocationList(locations);
                 } else {
                     showEmptyMessage("未找到匹配的垃圾投放点");
                 }
@@ -623,17 +589,17 @@
         }
 
         // 渲染投放点列表
-        function renderLocationList(locationsToRender) {
+        function renderLocationList(locations) {
             const container = document.getElementById('locationResults');
             
-            if (!locationsToRender || locationsToRender.length === 0) {
+            if (!locations || locations.length === 0) {
                 container.innerHTML = '<div class="empty-message"><i class="fas fa-map-marker-alt"></i><p>附近未找到垃圾投放点</p></div>';
                 return;
             }
             
             container.innerHTML = '';
             
-            locationsToRender.forEach(location => {
+            locations.forEach(location => {
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.onclick = () => {
@@ -656,16 +622,7 @@
                     <div class="location-name">${location.name}</div>
                     <div class="location-details">
                         <span><i class="fas fa-road"></i> ${location.address}</span>
-                        <span><i class="fas fa-clock"></i> ${location.hours}</span>
-                    </div>
-                    <div>
-                        ${location.types.map(type => 
-                            `<span class="location-type ${type}">${getTypeName(type)}</span>`
-                        ).join('')}
-                    </div>
-                    <div class="location-details">
-                        <span><i class="fas fa-walking"></i> 距离: ${location.distance}</span>
-                        <span><i class="fas fa-info-circle"></i> 容量: ${location.capacity}</span>
+                        <span><i class="fas fa-ruler"></i> ${location.distance}</span>
                     </div>
                 `;
                 
@@ -683,17 +640,6 @@
         function showEmptyMessage(message = "未找到垃圾投放点") {
             const container = document.getElementById('locationResults');
             container.innerHTML = `<div class="empty-message"><i class="fas fa-map-marker-alt"></i><p>${message}</p></div>`;
-        }
-
-        // 获取垃圾类型中文名称
-        function getTypeName(type) {
-            switch(type) {
-                case 'recyclable': return '可回收物';
-                case 'hazardous': return '有害垃圾';
-                case 'kitchen': return '厨余垃圾';
-                case 'other': return '其他垃圾';
-                default: return type;
-            }
         }
 
         // 页面加载完成后初始化地图
