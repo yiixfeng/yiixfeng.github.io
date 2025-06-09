@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>垃圾分类知识测试</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        /* 答题界面样式 */
+        .quiz-interface {
+            display: block;
+        }
+        
+        .quiz-header {
+            text-align: center;
+            padding: 10px 0 25px;
+        }
+        
+        .quiz-title {
+            font-size: 24px;
+            color: #2E7D32;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .quiz-title i {
+            margin-right: 12px;
+            color: #4CAF50;
+        }
+        
+        .quiz-description {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .quiz-container {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .question-counter {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            font-weight: 500;
+        }
+        
+        .question-text {
+            font-size: 20px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: #4CAF50;
+        }
+        
+        .option.selected {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.08);
+        }
+        
+        .option .option-letter {
+            font-weight: bold;
+            font-size: 20px;
+            color: #2E7D32;
+            margin-right: 15px;
+            min-width: 24px;
+            text-align: center;
+        }
+        
+        .option .option-content {
+            flex: 1;
+        }
+        
+        .quiz-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #4CAF50;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-btn:hover {
+            background: #3e8e41;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-btn:disabled {
+            background: #a5d6a7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .nav-btn i {
+            margin: 0 5px;
+        }
+        
+        .back-btn {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .back-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .submit-btn {
+            background: #2196F3;
+        }
+        
+        .submit-btn:hover {
+            background: #1976D2;
+        }
+        
+        /* 结果页面 */
+        .result-interface {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .result-box {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            position: relative;
+            border: 5px solid #4CAF50;
+        }
+        
+        .score-text {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2196F3;
+        }
+        
+        .score-label {
+            position: absolute;
+            bottom: 30px;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .score-message {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #2E7D32;
+            font-weight: 600;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            min-width: 120px;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2196F3;
+        }
+        
+        .restart-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .restart-btn:hover {
+            background: #388E3C;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        .restart-btn i {
+            margin-left: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #757575;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .quiz-title {
+                font-size: 22px;
+            }
+            
+            .quiz-description {
+                font-size: 14px;
+            }
+            
+            .quiz-container {
+                padding: 20px 15px;
+            }
+            
+            .question-text {
+                font-size: 18px;
+            }
+            
+            .stat-item {
+                padding: 10px;
+                min-width: 100px;
+            }
+            
+            .nav-btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .score-circle {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .score-text {
+                font-size: 40px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .quiz-nav {
+                flex-wrap: wrap;
+            }
+            
+            .nav-btn {
+                flex: 1;
+                min-width: 120px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+            
+            .restart-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1><i class="fas fa-recycle"></i> 垃圾分类知识测试</h1>
+                <p>环保知识学习与能力评估平台</p>
+            </div>
+        </header>
+        
+        <!-- 垃圾分类答题界面 -->
+        <div class="content quiz-interface" id="quizInterface">
+            <div class="quiz-header">
+                <h2 class="quiz-title"><i class="fas fa-puzzle-piece"></i> 垃圾分类知识测评</h2>
+                <p class="quiz-description">测试你对垃圾分类知识的掌握程度，共10道题，每题10分，满分100分</p>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question-counter">
+                    <span>问题 <span id="currentQuestion">1</span> / 10</span>
+                    <span>得分: <span id="currentScore">0</span>/100</span>
+                </div>
+                
+                <div class="question-text" id="questionText">
+                    问题加载中...
+                </div>
+                
+                <div class="options-container" id="optionsContainer">
+                    <!-- 选项将由JavaScript生成 -->
+                </div>
+                
+                <div class="quiz-nav">
+                    <button class="nav-btn back-btn" id="prevBtn" disabled>
+                        <i class="fas fa-arrow-left"></i> 上一题
+                    </button>
+                    <button class="nav-btn" id="nextBtn">
+                        下一题 <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="nav-btn submit-btn" id="submitBtn" style="display: none;">
+                        提交答案 <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 答题结果界面 -->
+        <div class="content result-interface" id="resultInterface">
+            <div class="result-box">
+                <h2 class="quiz-title"><i class="fas fa-trophy"></i> 答题结果</h2>
+                
+                <div class="score-circle">
+                    <div class="score-text" id="finalScore">0</div>
+                    <div class="score-label">分数</div>
+                </div>
+                
+                <div class="score-message" id="scoreMessage">
+                    继续努力！
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="correctCount">0</div>
+                        <div>答对题数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="wrongCount">0</div>
+                        <div>答错题数</div>
+                    </div>
+                </div>
+                
+                <button class="restart-btn" id="restartBtn">
+                    再次挑战 <i class="fas fa-redo"></i>
+                </button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 环保知识测试平台 | 为绿色地球贡献力量</p>
+        </footer>
+    </div>
+
+    <script>
+        // 答题系统元素
+        const quizElements = {
+            currentQuestion: document.getElementById('currentQuestion'),
+            currentScore: document.getElementById('currentScore'),
+            questionText: document.getElementById('questionText'),
+            optionsContainer: document.getElementById('optionsContainer'),
+            prevBtn: document.getElementById('prevBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            submitBtn: document.getElementById('submitBtn')
+        };
+        
+        // 结果页面元素
+        const resultElements = {
+            finalScore: document.getElementById('finalScore'),
+            scoreMessage: document.getElementById('scoreMessage'),
+            correctCount: document.getElementById('correctCount'),
+            wrongCount: document.getElementById('wrongCount'),
+            restartBtn: document.getElementById('restartBtn')
+        };
+        
+        // 答题系统数据
+        const quizData = [
+            {
+                question: "废纸箱应该属于哪类垃圾？",
+                options: ["可回收物", "有害垃圾", "厨余垃圾", "其他垃圾"],
+                answer: 0,
+                explanation: "废纸箱属于可回收物，可以回收再利用制作纸制品。"
+            },
+            {
+                question: "电池应该属于哪类垃圾？",
+                options: ["可回收物", "有害垃圾", "厨余垃圾", "其他垃圾"],
+                answer: 1,
+                explanation: "电池含有重金属和有害化学物质，属于有害垃圾，需要特殊处理。"
+            },
+            {
+                question: "苹果核应该属于哪类垃圾？",
+                options: ["可回收物", "有害垃圾", "厨余垃圾", "其他垃圾"],
+                answer: 2,
+                explanation: "苹果核属于厨余垃圾，易腐烂，可堆肥处理。"
+            },
+            {
+                question: "一次性塑料袋应该属于哪类垃圾？",
+                options: ["可回收物", "有害垃圾", "厨余垃圾", "其他垃圾"],
+                answer: 3,
+                explanation: "一次性塑料袋属于其他垃圾，难以回收利用且污染环境。"
+            },
+            {
+                question: "旧衣服应该属于哪类垃圾？",
+                options: ["可回收物", "有害垃圾", "厨余垃圾", "其他垃圾"],
+                answer: 0,
+                explanation: "旧衣服属于可回收物，可通过回收渠道进行资源再利用。"
+            },
+            {
+                question: "过期药品应该属于哪类垃圾？",
+                options: ["可回收物", "有害垃圾", "厨余垃圾", "其他垃圾"],
+                answer: 1,
+                explanation: "过期药品属于有害垃圾，需要特殊处理避免环境污染。"
+            },
+            {
+                question: "茶叶渣应该属于哪类垃圾？",
+                options: ["可回收物", "有害垃圾", "厨余垃圾", "其他垃圾"],
+                answer: 2,
+                explanation: "茶叶渣属于厨余垃圾，可以堆肥处理或作为肥料使用。"
+            },
+            {
+                question: "脏污的餐巾纸应该属于哪类垃圾？",
+                options: ["可回收物", "有害垃圾", "厨余垃圾", "其他垃圾"],
+                answer: 3,
+                explanation: "被污染的纸巾属于其他垃圾，无法回收利用。"
+            },
+            {
+                question: "玻璃瓶应该属于哪类垃圾？",
+                options: ["可回收物", "有害垃圾", "厨余垃圾", "其他垃圾"],
+                answer: 0,
+                explanation: "玻璃瓶属于可回收物，经过处理可制成新的玻璃制品。"
+            },
+            {
+                question: "荧光灯管应该属于哪类垃圾？",
+                options: ["可回收物", "有害垃圾", "厨余垃圾", "其他垃圾"],
+                answer: 1,
+                explanation: "荧光灯管含有汞等有害物质，属于有害垃圾。"
+            }
+        ];
+        
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAnswers = Array(quizData.length).fill(-1);
+        let userAnswers = Array(quizData.length).fill(null);
+        
+        // 初始化页面
+        function initializeQuiz() {
+            loadQuestion(currentQuestionIndex);
+            updateNavigationButtons();
+        }
+        
+        // 加载问题
+        function loadQuestion(index) {
+            const question = quizData[index];
+            quizElements.currentQuestion.textContent = index + 1;
+            quizElements.questionText.textContent = question.question;
+            quizElements.optionsContainer.innerHTML = '';
+            
+            // 创建选项
+            const letters = ['A', 'B', 'C', 'D'];
+            question.options.forEach((option, i) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                if (selectedAnswers[index] === i) {
+                    optionElement.classList.add('selected');
+                }
+                optionElement.innerHTML = `
+                    <span class="option-letter">${letters[i]}</span>
+                    <div class="option-content">${option}</div>
+                `;
+                
+                optionElement.addEventListener('click', () => {
+                    // 移除其他选项的选中状态
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    optionElement.classList.add('selected');
+                    
+                    // 记录用户选择
+                    selectedAnswers[index] = i;
+                    userAnswers[index] = i;
+                    
+                    // 自动计算得分
+                    calculateScore();
+                    updateNavigationButtons();
+                });
+                
+                quizElements.optionsContainer.appendChild(optionElement);
+            });
+        }
+        
+        // 计算得分
+        function calculateScore() {
+            score = 0;
+            for (let i = 0; i < quizData.length; i++) {
+                if (userAnswers[i] !== null && userAnswers[i] === quizData[i].answer) {
+                    score += 10;
+                }
+            }
+            quizElements.currentScore.textContent = score;
+        }
+        
+        // 更新导航按钮状态
+        function updateNavigationButtons() {
+            // 上一题按钮
+            quizElements.prevBtn.disabled = (currentQuestionIndex === 0);
+            
+            // 下一题/提交按钮
+            if (currentQuestionIndex === quizData.length - 1) {
+                quizElements.nextBtn.style.display = 'none';
+                quizElements.submitBtn.style.display = 'flex';
+                quizElements.submitBtn.disabled = (selectedAnswers[currentQuestionIndex] === -1);
+            } else {
+                quizElements.nextBtn.style.display = 'flex';
+                quizElements.submitBtn.style.display = 'none';
+                quizElements.nextBtn.disabled = (selectedAnswers[currentQuestionIndex] === -1);
+            }
+        }
+        
+        // 导航到下一题
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+                updateNavigationButtons();
+            }
+        }
+        
+        // 导航到上一题
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+                updateNavigationButtons();
+            }
+        }
+        
+        // 提交答案
+        function submitQuiz() {
+            // 检查最后一道题是否作答
+            if (selectedAnswers[currentQuestionIndex] !== -1) {
+                calculateScore();
+                showResultInterface();
+            }
+        }
+        
+        // 显示结果页面
+        function showResultInterface() {
+            const quizInterface = document.getElementById('quizInterface');
+            const resultInterface = document.getElementById('resultInterface');
+            
+            quizInterface.style.display = 'none';
+            resultInterface.style.display = 'block';
+            
+            // 计算并显示分数
+            resultElements.finalScore.textContent = score;
+            const correctCount = score / 10;
+            resultElements.correctCount.textContent = correctCount;
+            resultElements.wrongCount.textContent = 10 - correctCount;
+            
+            // 根据分数显示不同评语
+            if (score >= 90) {
+                resultElements.scoreMessage.textContent = "太棒了！你是垃圾分类专家！";
+            } else if (score >= 70) {
+                resultElements.scoreMessage.textContent = "做得很好！垃圾分类知识掌握得不错！";
+            } else if (score >= 50) {
+                resultElements.scoreMessage.textContent = "及格了！继续努力，你会做得更好！";
+            } else {
+                resultElements.scoreMessage.textContent = "别灰心！垃圾分类需要更多学习和实践！";
+            }
+        }
+        
+        // 重启答题
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedAnswers = Array(quizData.length).fill(-1);
+            userAnswers = Array(quizData.length).fill(null);
+            
+            const quizInterface = document.getElementById('quizInterface');
+            const resultInterface = document.getElementById('resultInterface');
+            
+            resultInterface.style.display = 'none';
+            quizInterface.style.display = 'block';
+            
+            initializeQuiz();
+        }
+        
+        // 事件监听
+        quizElements.nextBtn.addEventListener('click', nextQuestion);
+        quizElements.prevBtn.addEventListener('click', prevQuestion);
+        quizElements.submitBtn.addEventListener('click', submitQuiz);
+        resultElements.restartBtn.addEventListener('click', restartQuiz);
+        
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', initializeQuiz);
+    </script>
+</body>
+</html>
