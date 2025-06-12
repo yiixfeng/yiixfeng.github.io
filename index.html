@@ -12,6 +12,39 @@
             box-sizing: border-box;
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
         }
+        .upload-section {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px dashed #4CAF50;
+            border-radius: 8px;
+            text-align: center;
+            background-color: #f8fff8;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        
+        #uploadInput {
+            display: none;
+        }
+        
+        .preview-container {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        #previewImage {
+            max-width: 100%;
+            border-radius: 8px;
+        }
         
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
@@ -419,12 +452,31 @@
                     </button>
                 </div>
                 
+                <!-- 新增图片上传区域 -->
+                <div class="upload-section">
+                    <h3><i class="fas fa-cloud-upload-alt"></i> 或上传图片识别</h3>
+                    <label for="uploadInput" class="upload-btn">
+                        <i class="fas fa-upload"></i> 选择图片
+                    </label>
+                    <input type="file" id="uploadInput" accept="image/*">
+                    <p>支持JPG、PNG格式，最大5MB</p>
+                    
+                    <div class="preview-container" id="previewContainer">
+                        <h4>预览</h4>
+                        
+                        <button id="uploadAnalyzeBtn" class="btn btn-primary" style="margin-top: 10px;">
+                            <i class="fas fa-search"></i> 分析图片
+                        </button>
+                    </div>
+                </div>
+                
                 <div class="instructions">
                     <h3>使用说明：</h3>
                     <ol>
                         <li>点击【开启摄像头】按钮启动摄像头</li>
                         <li>将垃圾物品放置在识别框内</li>
                         <li>点击【拍照识别】进行垃圾分类</li>
+                        <li>或上传图片进行识别</li>
                         <li>查看右侧识别结果</li>
                         <li>使用【重新拍摄】按钮识别新物品</li>
                         <li>完成后点击【停止拍摄】关闭摄像头</li>
@@ -438,7 +490,7 @@
                 <div class="result-card">
                     <div class="result-placeholder" id="resultPlaceholder">
                         <i class="fas fa-leaf"></i>
-                        <p>请拍摄垃圾物品获取分类结果</p>
+                        <p>请拍摄或上传垃圾物品获取分类结果</p>
                     </div>
                     
                     <div class="loading" id="loadingIndicator">
@@ -467,34 +519,6 @@
                     </div>
                 </div>
                 
-                <div class="location-points" id="locationPoints">
-                    <h4><i class="fas fa-map-pin"></i> 附近垃圾投放点</h4>
-                    <div class="location-item">
-                        <i class="fas fa-trash-alt"></i>
-                        <div>
-                            <div>绿景花园垃圾分类站</div>
-                            <div class="location-info">可回收物、有害垃圾、厨余垃圾、其他垃圾</div>
-                        </div>
-                        <span class="point-distance">250米</span>
-                    </div>
-                    <div class="location-item">
-                        <i class="fas fa-trash-alt"></i>
-                        <div>
-                            <div>市中心环保处理中心</div>
-                            <div class="location-info">可回收物、有害垃圾</div>
-                        </div>
-                        <span class="point-distance">850米</span>
-                    </div>
-                    <div class="location-item">
-                        <i class="fas fa-trash-alt"></i>
-                        <div>
-                            <div>阳光小区垃圾收集点</div>
-                            <div class="location-info">厨余垃圾、其他垃圾</div>
-                        </div>
-                        <span class="point-distance">1.2公里</span>
-                    </div>
-                </div>
-                
                 <div class="garbage-types">
                     <h3>垃圾分类标准：</h3>
                     <ul>
@@ -503,17 +527,15 @@
                         <li><span class="type-badge kitchen">厨余垃圾</span> - 食物残渣、果皮等易腐垃圾</li>
                         <li><span class="type-badge other">其他垃圾</span> - 难以回收的废弃物</li>
                     </ul>
-                    <button class="back-btn" onclick="location.href='navigation.html'">
-                      <i class="fas fa-arrow-left"></i> 投放点导航
-                    </button>
                 </div>
-                
+                <button class="back-btn" onclick="location.href='navigation.html'">
+                    <i class="fas fa-arrow-left"></i> 投放点导航
+                </button>
             </div>
-            
         </div>
         
         <footer>
-            <p>© 2025 智能垃圾分类系统 | 技术支持：阿里云垃圾分类API | 为环保贡献力量</p>
+            <p>© 2025 智能垃圾分类系统 | 后端服务：垃圾分类API | 为环保贡献力量</p>
         </footer>
     </div>
 
@@ -524,6 +546,10 @@
         const stopBtn = document.getElementById('stopBtn');
         const captureBtn = document.getElementById('captureBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const uploadInput = document.getElementById('uploadInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const uploadAnalyzeBtn = document.getElementById('uploadAnalyzeBtn');
         const navigationBtn = document.getElementById('navigationBtn');
         const cameraError = document.getElementById('cameraError');
         const resultPlaceholder = document.getElementById('resultPlaceholder');
@@ -538,8 +564,8 @@
         
         // 全局变量
         let stream = null;
-        const ALIYUN_APPCODE = ''; // 替换为你的阿里云AppCode
-        
+        const API_ENDPOINT = 'http://localhost:5000/api/classify'; // 后端API地址
+
         // 启动摄像头
         async function startCamera() {
             try {
@@ -600,8 +626,8 @@
                 // 获取图像数据（Base64格式）
                 const imageData = canvas.toDataURL('image/jpeg');
                 
-                // 调用垃圾分类API
-                const garbageData = await classifyGarbage(imageData);
+                // 调用后端API进行垃圾分类
+                const garbageData = await callBackendAPI(imageData);
                 
                 // 显示结果
                 displayResult(garbageData);
@@ -614,88 +640,33 @@
             }
         }
         
-        // 调用阿里云垃圾分类API
-        async function classifyGarbage(imageData) {
-            // 检查AppCode是否设置
-            if (!ALIYUN_APPCODE || ALIYUN_APPCODE === 'YOUR_ALIYUN_APPCODE') {
-                throw new Error('请设置阿里云AppCode');
+        // 调用后端API
+        async function callBackendAPI(imageData) {
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ image: imageData })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // 检查API响应
+                if (!data.success || !data.data) {
+                    throw new Error(data.message || '垃圾分类识别失败');
+                }
+                
+                return data.data;
+            } catch (error) {
+                console.error('API调用错误:', error);
+                throw new Error('无法连接到分类服务，请稍后重试');
             }
-            
-            // 去掉Base64前缀
-            const base64Data = imageData.split(',')[1];
-            
-            // 阿里云垃圾分类API端点
-            const apiUrl = 'https://gcxxzx.market.alicloudapi.com/rest/160601/img_identification/classify.json';
-            
-            // 构造API请求数据
-            const formData = new FormData();
-            formData.append('image', base64Data);
-            
-            // 发送API请求
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `APPCODE ${ALIYUN_APPCODE}`
-                },
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            // 检查API响应
-            if (!data.success || !data.data || !data.data.result || data.data.result.length === 0) {
-                throw new Error(data.message || '垃圾分类识别失败');
-            }
-            
-            // 返回第一个识别结果
-            return parseAliyunResult(data.data.result[0]);
-        }
-        
-        // 解析阿里云API返回结果
-        function parseAliyunResult(result) {
-            // 阿里云API返回示例：
-            // {
-            //   "name": "手机",
-            //   "category": "可回收物",
-            //   "confidence": 0.95
-            // }
-            
-            // 将阿里云分类名称映射到我们的类型
-            const categoryMapping = {
-                '可回收物': { type: 0, name: '可回收垃圾' },
-                '有害垃圾': { type: 1, name: '有害垃圾' },
-                '厨余垃圾': { type: 2, name: '厨余垃圾' },
-                '其他垃圾': { type: 3, name: '其他垃圾' },
-                '干垃圾': { type: 3, name: '其他垃圾' },
-                '湿垃圾': { type: 2, name: '厨余垃圾' }
-            };
-            
-            const category = result.category || '其他垃圾';
-            const mapped = categoryMapping[category] || categoryMapping['其他垃圾'];
-            
-            // 生成解释和建议
-            const explanations = {
-                0: '可回收物是指适宜回收利用和资源化利用的生活废弃物',
-                1: '有害垃圾是指对人体健康或者自然环境造成直接或潜在危害的废弃物',
-                2: '厨余垃圾是指易腐的生物质生活废弃物',
-                3: '其他垃圾是指除可回收物、有害垃圾、厨余垃圾以外的其他生活废弃物'
-            };
-            
-            const suggestions = {
-                0: '请清洁后投入可回收物收集容器',
-                1: '请小心处理，投入有害垃圾收集容器',
-                2: '请去除包装后投入厨余垃圾收集容器',
-                3: '请投入其他垃圾收集容器'
-            };
-            
-            return {
-                name: result.name || '未知物品',
-                type: mapped.type,
-                categoryName: mapped.name,
-                confidence: result.confidence || 0,
-                explain: explanations[mapped.type],
-                suggest: suggestions[mapped.type]
-            };
         }
         
         // 显示垃圾分类结果
@@ -750,8 +721,72 @@
             errorMessage.style.display = 'none';
             resultContent.style.display = 'none';
             locationPoints.style.display = 'none';
+            
+            // 重置上传区域
+            previewContainer.style.display = 'none';
+            previewImage.src = '';
+            uploadInput.value = '';
         }
-    
+        
+        // 显示导航点
+        function showNavigationPoints() {
+            locationPoints.style.display = 'block';
+        }
+        
+        // 处理图片上传
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // 检查文件类型
+            if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
+                showError('请上传JPG或PNG格式的图片');
+                return;
+            }
+            
+            // 检查文件大小（5MB）
+            if (file.size > 5 * 1024 * 1024) {
+                showError('图片大小不能超过5MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // 分析上传的图片
+        async function analyzeUploadedImage() {
+            if (!previewImage.src) {
+                showError('请先选择一张图片');
+                return;
+            }
+            
+            try {
+                // 显示加载状态
+                resultPlaceholder.style.display = 'none';
+                errorMessage.style.display = 'none';
+                resultContent.style.display = 'none';
+                loadingIndicator.style.display = 'flex';
+                
+                // 调用后端API
+                const garbageData = await callBackendAPI(previewImage.src);
+                
+                // 显示结果
+                displayResult(garbageData);
+            } catch (error) {
+                console.error('识别过程中出错:', error);
+                showError('识别失败: ' + error.message);
+            } finally {
+                // 隐藏加载状态
+                loadingIndicator.style.display = 'none';
+            }
+        }
         
         // 事件监听
         startBtn.addEventListener('click', startCamera);
@@ -759,6 +794,8 @@
         captureBtn.addEventListener('click', captureAndClassify);
         resetBtn.addEventListener('click', reset);
         navigationBtn.addEventListener('click', showNavigationPoints);
+        uploadInput.addEventListener('change', handleImageUpload);
+        uploadAnalyzeBtn.addEventListener('click', analyzeUploadedImage);
         
         // 页面加载时初始化
         window.addEventListener('load', () => {
@@ -767,12 +804,6 @@
                 cameraError.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 您的浏览器不支持摄像头功能，请使用Chrome、Firefox或Edge等现代浏览器';
                 cameraError.style.display = 'block';
                 startBtn.disabled = true;
-            }
-            
-            // 如果AppCode未设置，显示提示
-            if (!ALIYUN_APPCODE || ALIYUN_APPCODE === 'YOUR_ALIYUN_APPCODE') {
-                document.querySelector('footer p').innerHTML += 
-                    ' | <span style="color:#ff9800">注意：请设置阿里云AppCode</span>';
             }
         });
     </script>
