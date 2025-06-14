@@ -329,7 +329,7 @@
     </div>
 
     <!-- 百度地图API -->
-    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=5LgUlUqhondThajVao7DTZTfQmUV533l"></script>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=ADSBZRdKfMf6xFgWvizbkuHgD8ApXAku"></script>
     
     <script>
         // 全局变量
@@ -462,9 +462,12 @@
                     <div class="info-detail"><i class="fas fa-map-marker-alt"></i> ${location.address}</div>
                     <div class="info-detail"><i class="fas fa-ruler"></i> 距离: ${location.distance}</div>
                     <div class="info-actions">
-                        <button class="info-btn navigation" onclick="navigateToLocation(${location.position.lng}, ${location.position.lat})">
-                            <i class="fas fa-route"></i> 导航
-                        </button>
+                        <div class="info-actions">
+                <a class="info-btn navigation" 
+                   href="https://map.baidu.com/" 
+                   target="_blank">
+                    <i class="fas fa-route"></i> 导航
+                </a>
                     </div>
                 </div>
             `;
