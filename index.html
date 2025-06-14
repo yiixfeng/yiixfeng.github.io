@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能垃圾分类识别系统</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>垃圾分类识别 - 天行数据API实现</title>
     <style>
         * {
             margin: 0;
@@ -12,317 +11,210 @@
             box-sizing: border-box;
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
         }
-        .upload-section {
-            margin-top: 20px;
-            padding: 15px;
-            border: 2px dashed #4CAF50;
-            border-radius: 8px;
-            text-align: center;
-            background-color: #f8fff8;
-        }
-        
-        .upload-btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #4CAF50;
-            color: white;
-            border-radius: 50px;
-            cursor: pointer;
-            margin: 10px 0;
-            font-weight: 500;
-        }
-        
-        #uploadInput {
-            display: none;
-        }
-        
-        .preview-container {
-            margin-top: 15px;
-            display: none;
-        }
-        
-        #previewImage {
-            max-width: 100%;
-            border-radius: 8px;
-        }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            background: linear-gradient(135deg, #6a9bd8, #8bc34a);
             min-height: 100vh;
             padding: 20px;
             color: #333;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background: rgba(255, 255, 255, 0.92);
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             overflow: hidden;
         }
         
         header {
-            background: linear-gradient(90deg, #4CAF50 0%, #2E7D32 100%);
+            background: linear-gradient(to right, #4caf50, #2196f3);
             color: white;
             padding: 25px 30px;
             text-align: center;
-        }
-        .back-btn:hover {
-            background: #e0e0e0;
-        }
-
-        .back-btn {
-            display: block;
-            margin: 20px auto;
-            padding: 12px 30px;
-            background: #f5f5f5;
-            color: #333;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
+            position: relative;
         }
         
-        header h1 {
+        h1 {
             font-size: 28px;
             margin-bottom: 8px;
-            font-weight: 600;
+            letter-spacing: 1px;
         }
         
-        header p {
-            opacity: 0.9;
+        .subtitle {
             font-size: 16px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
         }
         
-        .content {
-            display: flex;
-            flex-wrap: wrap;
-            padding: 25px;
+        .main-content {
+            padding: 30px;
         }
         
-        .camera-section {
-            flex: 1;
-            min-width: 300px;
-            padding: 15px;
-            border-right: 1px solid #eee;
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
         }
         
-        .result-section {
-            flex: 1;
-            min-width: 300px;
-            padding: 15px;
-        }
-        
-        .section-title {
-            font-size: 20px;
-            margin-bottom: 20px;
-            color: #2E7D32;
-            font-weight: 600;
+        .camera-container {
+            width: 100%;
+            max-width: 500px;
+            height: 350px;
+            margin: 0 auto 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: #f5f7fa;
+            border: 2px dashed #b0bec5;
             display: flex;
             align-items: center;
+            justify-content: center;
+            flex-direction: column;
         }
         
-        .section-title i {
-            margin-right: 10px;
-            font-size: 24px;
-        }
-        
-        .video-container {
-            position: relative;
+        #cameraPreview {
             width: 100%;
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
+            height: 100%;
+            object-fit: cover;
+            display: none;
         }
         
-        #video {
-            width: 100%;
-            display: block;
+        .placeholder {
+            text-align: center;
+            padding: 20px;
+            color: #78909c;
         }
         
-        .scan-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70%;
-            height: 70%;
-            border: 2px dashed rgba(76, 175, 80, 0.7);
-            border-radius: 8px;
-            pointer-events: none;
+        .placeholder i {
+            font-size: 60px;
+            margin-bottom: 15px;
+            color: #b0bec5;
         }
         
-        .controls {
+        .btn-group {
             display: flex;
             gap: 15px;
+            justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 25px;
         }
         
-        .btn {
-            flex: 1;
-            min-width: 120px;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
+        button {
+            padding: 14px 28px;
             font-size: 16px;
-            font-weight: 500;
+            border: none;
+            border-radius: 50px;
             cursor: pointer;
+            font-weight: 600;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
         }
         
-        .btn i {
-            margin-right: 8px;
-            font-size: 18px;
-        }
-        
-        .btn-primary {
-            background: #4CAF50;
+        #captureBtn {
+            background: #2196f3;
             color: white;
-            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
         }
         
-        .btn-primary:hover {
-            background: #43A047;
-            transform: translateY(-2px);
-        }
-        
-        .btn-info {
-            background: #2196F3;
+        #uploadBtn {
+            background: #ff9800;
             color: white;
-            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
         }
         
-        .btn-info:hover {
-            background: #1E88E5;
-            transform: translateY(-2px);
-        }
-        
-        .btn-danger {
-            background: #F44336;
+        #resetBtn {
+            background: #f44336;
             color: white;
-            box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3);
         }
         
-        .btn-danger:hover {
-            background: #E53935;
-            transform: translateY(-2px);
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
-        .btn-secondary {
-            background: #F5F5F5;
-            color: #555;
-        }
+        #captureBtn:hover { background: #1976d2; }
+        #uploadBtn:hover { background: #f57c00; }
+        #resetBtn:hover { background: #d32f2f; }
         
-        .btn-secondary:hover {
-            background: #E0E0E0;
-        }
-        
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .result-card {
-            background: #F9F9F9;
+        .result-section {
+            background: #f1f8e9;
             border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        
-        .result-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            color: #9E9E9E;
-            text-align: center;
-        }
-        
-        .result-placeholder i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-        
-        .result-content {
+            margin-top: 20px;
             display: none;
         }
         
-        .garbage-type {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 15px;
+        .result-header {
             display: flex;
             align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
         }
         
         .type-badge {
-            display: inline-block;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 16px;
-            margin-left: 15px;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 15px;
         }
         
-        .recyclable {
-            background: #2196F3;
-            color: white;
+        .recyclable { background: #4caf50; color: white; }
+        .hazardous { background: #f44336; color: white; }
+        .kitchen { background: #ff9800; color: white; }
+        .other { background: #9e9e9e; color: white; }
+        
+        .result-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
         
-        .hazardous {
-            background: #F44336;
-            color: white;
+        @media (min-width: 768px) {
+            .result-content {
+                grid-template-columns: 1fr 1fr;
+            }
         }
         
-        .kitchen {
-            background: #4CAF50;
-            color: white;
+        .info-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
         
-        .other {
-            background: #9E9E9E;
-            color: white;
-        }
-        
-        .garbage-info {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px dashed #E0E0E0;
-        }
-        
-        .garbage-info p {
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-        
-        .loading {
-            display: none;
-            flex-direction: column;
+        .info-box h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #455a64;
+            display: flex;
             align-items: center;
-            justify-content: center;
-            flex: 1;
+            gap: 8px;
+        }
+        
+        .info-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #546e7a;
+        }
+        
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 30px 0;
         }
         
         .spinner {
             width: 50px;
             height: 50px;
-            border: 5px solid rgba(76, 175, 80, 0.2);
-            border-top: 5px solid #4CAF50;
+            border: 5px solid rgba(33, 150, 243, 0.2);
+            border-top: 5px solid #2196f3;
             border-radius: 50%;
+            margin: 0 auto 20px;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
         }
         
         @keyframes spin {
@@ -330,325 +222,261 @@
             100% { transform: rotate(360deg); }
         }
         
-        .error {
+        .error-message {
             display: none;
-            color: #F44336;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .camera-error {
-            background: #FFF8E1;
-            color: #FF8F00;
+            background: #ffebee;
+            color: #c62828;
             padding: 15px;
             border-radius: 8px;
-            margin-top: 15px;
-            display: none;
+            margin: 20px 0;
+            text-align: center;
         }
         
         footer {
             text-align: center;
             padding: 20px;
-            color: #757575;
             font-size: 14px;
-            border-top: 1px solid #eee;
+            color: #78909c;
+            background: #f5f7fa;
         }
         
-        .navigation-btn {
-            margin-top: 20px;
-            width: 100%;
-        }
-        
-        .location-points {
-            margin-top: 25px;
-            padding: 15px;
-            background: #e8f5e9;
-            border-radius: 8px;
+        #fileInput {
             display: none;
-        }
-        
-        .location-points h4 {
-            margin-bottom: 15px;
-            color: #2E7D32;
-        }
-        
-        .location-item {
-            padding: 10px;
-            border-bottom: 1px solid #c8e6c9;
-            display: flex;
-            align-items: center;
-        }
-        
-        .location-item:last-child {
-            border-bottom: none;
-        }
-        
-        .location-item i {
-            margin-right: 10px;
-            color: #4CAF50;
-            font-size: 20px;
-        }
-        
-        .point-distance {
-            margin-left: auto;
-            font-size: 14px;
-            color: #757575;
-        }
-        
-        @media (max-width: 768px) {
-            .camera-section, .result-section {
-                border-right: none;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 30px;
-            }
-            
-            .content {
-                flex-direction: column;
-            }
-            
-            .controls {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                margin-bottom: 10px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-recycle"></i> 智能垃圾分类识别系统</h1>
-            <p>使用AI技术识别垃圾类别，助力环保行动</p>
+            <h1>垃圾分类图像识别系统</h1>
+            <p class="subtitle">使用天行数据API实现智能垃圾分类，助力环保行动</p>
         </header>
         
-        <div class="content">
-            <div class="camera-section">
-                <h2 class="section-title"><i class="fas fa-camera"></i> 摄像头识别</h2>
-                
-                <div class="video-container">
-                    <video id="video" autoplay playsinline></video>
-                    <div class="scan-overlay"></div>
-                </div>
-                
-                <div class="camera-error" id="cameraError">
-                    <i class="fas fa-exclamation-triangle"></i> 无法访问摄像头：请确保您已授予摄像头权限且设备摄像头正常工作
-                </div>
-                
-                <div class="controls">
-                    <button id="startBtn" class="btn btn-primary">
-                        <i class="fas fa-play"></i> 开启摄像头
-                    </button>
-                    <button id="stopBtn" class="btn btn-danger" disabled>
-                        <i class="fas fa-stop"></i> 停止拍摄
-                    </button>
-                    <button id="captureBtn" class="btn btn-primary" disabled>
-                        <i class="fas fa-camera"></i> 拍照识别
-                    </button>
-                    <button id="resetBtn" class="btn btn-secondary" disabled>
-                        <i class="fas fa-redo"></i> 重新拍摄
-                    </button>
-                </div>
-                
-                <!-- 新增图片上传区域 -->
-                <div class="upload-section">
-                    <h3><i class="fas fa-cloud-upload-alt"></i> 或上传图片识别</h3>
-                    <label for="uploadInput" class="upload-btn">
-                        <i class="fas fa-upload"></i> 选择图片
-                    </label>
-                    <input type="file" id="uploadInput" accept="image/*">
-                    <p>支持JPG、PNG格式，最大5MB</p>
-                    
-                    <div class="preview-container" id="previewContainer">
-                        <h4>预览</h4>
-                        
-                        <button id="uploadAnalyzeBtn" class="btn btn-primary" style="margin-top: 10px;">
-                            <i class="fas fa-search"></i> 分析图片
-                        </button>
+        <div class="main-content">
+            <div class="upload-section">
+                <div class="camera-container">
+                    <video id="cameraPreview" autoplay playsinline></video>
+                    <div class="placeholder" id="cameraPlaceholder">
+                        <div>📷</div>
+                        <p>点击下方按钮开启摄像头或上传图片</p>
                     </div>
                 </div>
                 
-                <div class="instructions">
-                    <h3>使用说明：</h3>
-                    <ol>
-                        <li>点击【开启摄像头】按钮启动摄像头</li>
-                        <li>将垃圾物品放置在识别框内</li>
-                        <li>点击【拍照识别】进行垃圾分类</li>
-                        <li>或上传图片进行识别</li>
-                        <li>查看右侧识别结果</li>
-                        <li>使用【重新拍摄】按钮识别新物品</li>
-                        <li>完成后点击【停止拍摄】关闭摄像头</li>
-                    </ol>
+                <div class="btn-group">
+                    <button id="captureBtn">
+                        <span>📸 拍照识别</span>
+                    </button>
+                    <button id="uploadBtn">
+                        <span>🖼️ 上传图片</span>
+                    </button>
+                    <button id="resetBtn">
+                        <span>🔄 重新开始</span>
+                    </button>
                 </div>
+                
+                <input type="file" id="fileInput" accept="image/*">
             </div>
             
-            <div class="result-section">
-                <h2 class="section-title"><i class="fas fa-search"></i> 识别结果</h2>
-                
-                <div class="result-card">
-                    <div class="result-placeholder" id="resultPlaceholder">
-                        <i class="fas fa-leaf"></i>
-                        <p>请拍摄或上传垃圾物品获取分类结果</p>
-                    </div>
-                    
-                    <div class="loading" id="loadingIndicator">
-                        <div class="spinner"></div>
-                        <p>AI正在识别中，请稍候...</p>
-                    </div>
-                    
-                    <div class="error" id="errorMessage"></div>
-                    
-                    <div class="result-content" id="resultContent">
-                        <div class="garbage-type">
-                            <span id="garbageName">手机</span>
-                            <span class="type-badge" id="garbageTypeBadge">可回收垃圾</span>
-                        </div>
-                        
-                        <div class="garbage-info">
-                            <p><strong>分类说明：</strong></p>
-                            <p id="garbageExplain">电子产品属于可回收垃圾，应投放到可回收物收集容器中</p>
-                            <p><strong>处理建议：</strong></p>
-                            <p id="garbageSuggest">请确保手机电池已取出单独处理，主体投入可回收物箱</p>
-                        </div>
-                        
-                        <button id="navigationBtn" class="btn btn-info navigation-btn">
-                            <i class="fas fa-map-marker-alt"></i> 查找最近的垃圾投放点
-                        </button>
-                    </div>
+            <div class="loader" id="loader">
+                <div class="spinner"></div>
+                <p>正在识别垃圾类型，请稍候...</p>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="result-section" id="resultSection">
+                <div class="result-header">
+                    <div class="type-badge" id="garbageTypeBadge">可回收物</div>
+                    <h2 id="garbageName">塑料瓶</h2>
                 </div>
                 
-                <div class="garbage-types">
-                    <h3>垃圾分类标准：</h3>
-                    <ul>
-                        <li><span class="type-badge recyclable">可回收物</span> - 废纸、塑料、玻璃、金属等</li>
-                        <li><span class="type-badge hazardous">有害垃圾</span> - 电池、药品、化学品等</li>
-                        <li><span class="type-badge kitchen">厨余垃圾</span> - 食物残渣、果皮等易腐垃圾</li>
-                        <li><span class="type-badge other">其他垃圾</span> - 难以回收的废弃物</li>
-                    </ul>
+                <div class="result-content">
+                    <div class="info-box">
+                        <h3>📝 分类说明</h3>
+                        <div class="info-content" id="garbageExplain">
+                            塑料瓶属于可回收物，应清洁干燥后投放。
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h3>💡 处理建议</h3>
+                        <div class="info-content" id="garbageSuggest">
+                            请清洁后压扁投放，避免污染其他可回收物。
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h3>🔄 投放方式</h3>
+                        <div class="info-content" id="garbageDisposal">
+                            投放至蓝色可回收物垃圾桶。
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h3>ℹ️ 注意事项</h3>
+                        <div class="info-content" id="garbageNote">
+                            瓶盖和标签属于其他垃圾，需分开投放。
+                        </div>
+                    </div>
                 </div>
-                <button class="back-btn" onclick="location.href='navigation.html'">
-                    <i class="fas fa-arrow-left"></i> 投放点导航
-                </button>
             </div>
         </div>
         
         <footer>
-            <p>© 2025 智能垃圾分类系统 | 后端服务：垃圾分类API | 为环保贡献力量</p>
+            <p>Powered by 天行数据API | © 2025 垃圾分类识别系统</p>
         </footer>
     </div>
 
     <script>
+        // 天行数据API配置
+        const TX_API_KEY = '8d7a9bc9adbeafdc55f024569501a06c'; 
+        const TX_API_ENDPOINT = 'https://apis.tianapi.com/imglajifenlei/index';
+        
         // DOM元素
-        const video = document.getElementById('video');
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
+        const cameraPreview = document.getElementById('cameraPreview');
+        const cameraPlaceholder = document.getElementById('cameraPlaceholder');
         const captureBtn = document.getElementById('captureBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
         const resetBtn = document.getElementById('resetBtn');
-        const uploadInput = document.getElementById('uploadInput');
-        const previewContainer = document.getElementById('previewContainer');
-        const previewImage = document.getElementById('previewImage');
-        const uploadAnalyzeBtn = document.getElementById('uploadAnalyzeBtn');
-        const navigationBtn = document.getElementById('navigationBtn');
-        const cameraError = document.getElementById('cameraError');
-        const resultPlaceholder = document.getElementById('resultPlaceholder');
-        const loadingIndicator = document.getElementById('loadingIndicator');
+        const fileInput = document.getElementById('fileInput');
+        const loader = document.getElementById('loader');
         const errorMessage = document.getElementById('errorMessage');
-        const resultContent = document.getElementById('resultContent');
+        const resultSection = document.getElementById('resultSection');
+        
         const garbageName = document.getElementById('garbageName');
         const garbageTypeBadge = document.getElementById('garbageTypeBadge');
         const garbageExplain = document.getElementById('garbageExplain');
         const garbageSuggest = document.getElementById('garbageSuggest');
-        const locationPoints = document.getElementById('locationPoints');
+        const garbageDisposal = document.getElementById('garbageDisposal');
+        const garbageNote = document.getElementById('garbageNote');
         
         // 全局变量
         let stream = null;
-        const API_ENDPOINT = 'http://localhost:5000/api/classify'; // 后端API地址
-
-        // 启动摄像头
-        async function startCamera() {
+        let currentImageData = null;
+        
+        // 初始化摄像头
+        async function initCamera() {
             try {
-                // 请求摄像头权限
                 stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'environment' // 优先使用后置摄像头
-                    } 
+                    video: { facingMode: 'environment' } 
                 });
                 
-                video.srcObject = stream;
-                captureBtn.disabled = false;
-                stopBtn.disabled = false;
-                resetBtn.disabled = true;
-                startBtn.disabled = true;
-                cameraError.style.display = 'none';
+                cameraPreview.srcObject = stream;
+                cameraPreview.style.display = 'block';
+                cameraPlaceholder.style.display = 'none';
             } catch (err) {
-                console.error('摄像头访问出错:', err);
-                cameraError.style.display = 'block';
-                captureBtn.disabled = true;
-                stopBtn.disabled = true;
+                console.error('摄像头访问错误:', err);
+                showError('无法访问摄像头，请检查设备权限或使用上传图片功能');
             }
         }
         
-        // 停止摄像头
-        function stopCamera() {
-            if (stream) {
-                const tracks = stream.getTracks();
-                tracks.forEach(track => track.stop());
-                video.srcObject = null;
-                stream = null;
+        // 拍照
+        function captureImage() {
+            if (!stream) {
+                showError('摄像头未初始化，请重试');
+                return;
             }
             
-            startBtn.disabled = false;
-            captureBtn.disabled = true;
-            stopBtn.disabled = true;
-            resetBtn.disabled = false;
+            const canvas = document.createElement('canvas');
+            canvas.width = cameraPreview.videoWidth;
+            canvas.height = cameraPreview.videoHeight;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
+            
+            // 压缩图像尺寸
+            const MAX_SIZE = 1024;
+            let width = canvas.width;
+            let height = canvas.height;
+            
+            if (width > height && width > MAX_SIZE) {
+                height *= MAX_SIZE / width;
+                width = MAX_SIZE;
+            } else if (height > MAX_SIZE) {
+                width *= MAX_SIZE / height;
+                height = MAX_SIZE;
+            }
+            
+            const resizedCanvas = document.createElement('canvas');
+            resizedCanvas.width = width;
+            resizedCanvas.height = height;
+            
+            const resizedCtx = resizedCanvas.getContext('2d');
+            resizedCtx.drawImage(canvas, 0, 0, width, height);
+            
+            currentImageData = resizedCanvas.toDataURL('image/jpeg', 0.8);
+            classifyImage();
         }
         
-        // 拍照并进行垃圾分类识别
-        async function captureAndClassify() {
+        // 上传图片处理
+        uploadBtn.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', function(e) {
+            if (!this.files || !this.files[0]) return;
+            
+            const file = this.files[0];
+            if (file.size > 5 * 1024 * 1024) {
+                showError('图片大小不能超过5MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // 压缩图片
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 1024;
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > height && width > MAX_SIZE) {
+                        height *= MAX_SIZE / width;
+                        width = MAX_SIZE;
+                    } else if (height > MAX_SIZE) {
+                        width *= MAX_SIZE / height;
+                        height = MAX_SIZE;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    currentImageData = canvas.toDataURL('image/jpeg', 0.8);
+                    classifyImage();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        // 调用天行数据API进行垃圾分类
+        async function classifyImage() {
+            if (!currentImageData) {
+                showError('未获取到有效图片');
+                return;
+            }
+            
             try {
                 // 显示加载状态
-                resultPlaceholder.style.display = 'none';
+                loader.style.display = 'block';
                 errorMessage.style.display = 'none';
-                resultContent.style.display = 'none';
-                loadingIndicator.style.display = 'flex';
+                resultSection.style.display = 'none';
                 
-                // 创建canvas元素用于拍照
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
+                // 提取base64数据（去掉前缀）
+                const base64Data = currentImageData.split(',')[1];
                 
-                // 绘制当前视频帧到canvas
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                // 构造请求参数
+                const formData = new FormData();
+                formData.append('key', TX_API_KEY);
+                formData.append('img', base64Data);
                 
-                // 获取图像数据（Base64格式）
-                const imageData = canvas.toDataURL('image/jpeg');
-                
-                // 调用后端API进行垃圾分类
-                const garbageData = await callBackendAPI(imageData);
-                
-                // 显示结果
-                displayResult(garbageData);
-            } catch (error) {
-                console.error('识别过程中出错:', error);
-                showError('识别失败: ' + error.message);
-            } finally {
-                // 隐藏加载状态
-                loadingIndicator.style.display = 'none';
-            }
-        }
-        
-        // 调用后端API
-        async function callBackendAPI(imageData) {
-            try {
-                const response = await fetch(API_ENDPOINT, {
+                // 调用API
+                const response = await fetch(TX_API_ENDPOINT, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ image: imageData })
+                    body: formData
                 });
                 
                 if (!response.ok) {
@@ -658,154 +486,125 @@
                 const data = await response.json();
                 
                 // 检查API响应
-                if (!data.success || !data.data) {
-                    throw new Error(data.message || '垃圾分类识别失败');
+                if (data.code !== 200) {
+                    throw new Error(data.msg || '垃圾分类识别失败');
                 }
                 
-                return data.data;
+                // 处理结果
+                const result = data.result.list[0]; // 取置信度最高的结果
+                
+                // 映射垃圾类型
+                const garbageType = result.lajitype;
+                const typeClass = mapTypeToClass(garbageType);
+                const typeName = mapTypeToName(garbageType);
+                
+                // 显示结果
+                displayResult({
+                    name: result.name,
+                    categoryName: typeName,
+                    explain: result.explain || '暂无详细说明',
+                    suggest: result.tip || '请根据当地垃圾分类标准处理',
+                    type: garbageType
+                });
+                
             } catch (error) {
                 console.error('API调用错误:', error);
-                throw new Error('无法连接到分类服务，请稍后重试');
+                showError(`识别失败: ${error.message}`);
+            } finally {
+                loader.style.display = 'none';
             }
         }
         
-        // 显示垃圾分类结果
+        // 垃圾类型映射到CSS类
+        function mapTypeToClass(type) {
+            switch(type) {
+                case 0: return 'recyclable'; // 可回收物
+                case 1: return 'hazardous';   // 有害垃圾
+                case 2: return 'kitchen';     // 厨余垃圾
+                case 3: return 'other';      // 其他垃圾
+                default: return 'other';
+            }
+        }
+        
+        // 垃圾类型映射到名称
+        function mapTypeToName(type) {
+            switch(type) {
+                case 0: return '可回收物';
+                case 1: return '有害垃圾';
+                case 2: return '厨余垃圾';
+                case 3: return '其他垃圾';
+                default: return '未分类';
+            }
+        }
+        
+        // 显示结果
         function displayResult(garbage) {
-            // 更新DOM元素
             garbageName.textContent = garbage.name || '未知物品';
-            garbageExplain.textContent = garbage.explain || '暂无详细说明';
-            garbageSuggest.textContent = garbage.suggest || '请根据当地垃圾分类标准处理';
+            garbageTypeBadge.textContent = garbage.categoryName;
+            garbageTypeBadge.className = 'type-badge ' + mapTypeToClass(garbage.type);
+            garbageExplain.textContent = garbage.explain;
+            garbageSuggest.textContent = garbage.suggest;
             
-            // 设置垃圾类型和对应样式
-            let typeText = garbage.categoryName || '未分类';
-            let typeClass = '';
-            
-            switch (garbage.type) {
-                case 0:
-                    typeClass = 'recyclable';
+            // 根据垃圾类型提供投放建议
+            switch(garbage.type) {
+                case 0: // 可回收物
+                    garbageDisposal.textContent = '投放至蓝色可回收物垃圾桶';
+                    garbageNote.textContent = '请保持清洁干燥，避免污染';
                     break;
-                case 1:
-                    typeClass = 'hazardous';
+                case 1: // 有害垃圾
+                    garbageDisposal.textContent = '投放至红色有害垃圾桶';
+                    garbageNote.textContent = '轻拿轻放，避免破损泄露';
                     break;
-                case 2:
-                    typeClass = 'kitchen';
+                case 2: // 厨余垃圾
+                    garbageDisposal.textContent = '投放至绿色厨余垃圾桶';
+                    garbageNote.textContent = '请沥干水分，去除包装';
                     break;
-                case 3:
-                    typeClass = 'other';
-                    break;
-                default:
-                    typeClass = 'other';
+                default: // 其他垃圾
+                    garbageDisposal.textContent = '投放至灰色其他垃圾桶';
+                    garbageNote.textContent = '尽量沥干水分后投放';
             }
             
-            garbageTypeBadge.textContent = typeText;
-            garbageTypeBadge.className = 'type-badge ' + typeClass;
-            
-            // 显示结果区域
-            resultContent.style.display = 'flex';
-            resultPlaceholder.style.display = 'none';
-            locationPoints.style.display = 'none';
+            resultSection.style.display = 'block';
         }
         
         // 显示错误信息
         function showError(message) {
-            errorMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            errorMessage.textContent = message;
             errorMessage.style.display = 'block';
-            resultPlaceholder.style.display = 'none';
-            resultContent.style.display = 'none';
-            locationPoints.style.display = 'none';
-        }
-        
-        // 重置界面
-        function reset() {
-            resultPlaceholder.style.display = 'flex';
-            errorMessage.style.display = 'none';
-            resultContent.style.display = 'none';
-            locationPoints.style.display = 'none';
             
-            // 重置上传区域
-            previewContainer.style.display = 'none';
-            previewImage.src = '';
-            uploadInput.value = '';
-        }
-        
-        // 显示导航点
-        function showNavigationPoints() {
-            locationPoints.style.display = 'block';
-        }
-        
-        // 处理图片上传
-        function handleImageUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            // 检查文件类型
-            if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
-                showError('请上传JPG或PNG格式的图片');
-                return;
-            }
-            
-            // 检查文件大小（5MB）
-            if (file.size > 5 * 1024 * 1024) {
-                showError('图片大小不能超过5MB');
-                return;
-            }
-            
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                previewContainer.style.display = 'block';
-            };
-            
-            reader.readAsDataURL(file);
-        }
-        
-        // 分析上传的图片
-        async function analyzeUploadedImage() {
-            if (!previewImage.src) {
-                showError('请先选择一张图片');
-                return;
-            }
-            
-            try {
-                // 显示加载状态
-                resultPlaceholder.style.display = 'none';
+            // 5秒后自动隐藏错误信息
+            setTimeout(() => {
                 errorMessage.style.display = 'none';
-                resultContent.style.display = 'none';
-                loadingIndicator.style.display = 'flex';
-                
-                // 调用后端API
-                const garbageData = await callBackendAPI(previewImage.src);
-                
-                // 显示结果
-                displayResult(garbageData);
-            } catch (error) {
-                console.error('识别过程中出错:', error);
-                showError('识别失败: ' + error.message);
-            } finally {
-                // 隐藏加载状态
-                loadingIndicator.style.display = 'none';
+            }, 5000);
+        }
+        
+        // 重置功能
+        function resetApp() {
+            // 停止摄像头
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
             }
+            
+            // 重置UI
+            cameraPreview.style.display = 'none';
+            cameraPlaceholder.style.display = 'flex';
+            loader.style.display = 'none';
+            errorMessage.style.display = 'none';
+            resultSection.style.display = 'none';
+            fileInput.value = '';
+            currentImageData = null;
+            
+            // 重新初始化摄像头
+            initCamera();
         }
         
         // 事件监听
-        startBtn.addEventListener('click', startCamera);
-        stopBtn.addEventListener('click', stopCamera);
-        captureBtn.addEventListener('click', captureAndClassify);
-        resetBtn.addEventListener('click', reset);
-        navigationBtn.addEventListener('click', showNavigationPoints);
-        uploadInput.addEventListener('change', handleImageUpload);
-        uploadAnalyzeBtn.addEventListener('click', analyzeUploadedImage);
+        captureBtn.addEventListener('click', captureImage);
+        resetBtn.addEventListener('click', resetApp);
         
-        // 页面加载时初始化
-        window.addEventListener('load', () => {
-            // 检查getUserMedia支持
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                cameraError.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 您的浏览器不支持摄像头功能，请使用Chrome、Firefox或Edge等现代浏览器';
-                cameraError.style.display = 'block';
-                startBtn.disabled = true;
-            }
-        });
+        // 初始化应用
+        window.addEventListener('load', initCamera);
     </script>
 </body>
 </html>
