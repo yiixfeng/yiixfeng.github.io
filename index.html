@@ -18,6 +18,22 @@
             padding: 20px;
             color: #333;
         }
+
+        .back-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 30px;
+            background: #f5f5f5;
+            color: #333;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .back-btn:hover {
+            background: #e0e0e0;
+        }
         
         .container {
             max-width: 800px;
@@ -319,9 +335,12 @@
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
-        
+        <button class="back-btn" onclick="location.href='navigation.html'">
+                <i class="fas fa-arrow-left"></i> 投放点导航
+            </button>
         <footer>
             <p>Powered by 天行数据API | © 2025 垃圾分类识别系统</p>
         </footer>
